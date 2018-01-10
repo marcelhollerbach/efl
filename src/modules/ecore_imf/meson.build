@@ -8,13 +8,17 @@ if get_option('ecore_wl2')
   mods += ['wayland']
 endif
 
+
+loader_disabler = get_option('ecore-imf-loaders-disabler')
+
 foreach mod_name : mods
   mod_src = []
   mod_deps = []
-  subdir(mod_name)
-  config_h.set('BUILD_ECORE_IMF_'+mod_name.to_upper(), '1')
 
-  mod_install_dir =  join_paths(dir_package_modules, mod_name, module_arch)
-  module_files += join_paths(mod_install_dir, 'lib'+mod_name+'.'+sys_lib_extension)
-
+  if loader_disabler.contains(mod_name) == false
+    subdir(mod_name)
+    mod_install_dir =  join_paths(dir_package_modules, mod_name, module_arch)
+    module_files += join_paths(mod_install_dir, 'lib'+mod_name+'.'+sys_lib_extension)
+    config_h.set('BUILD_ECORE_IMF_'+mod_name.to_upper(), '1')
+  endif
 endforeach
