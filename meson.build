@@ -151,6 +151,7 @@ subprojects = [
 ['ecore_imf_evas'   , false,  true, false, false, false, false, []],
 ['ephysics'         , false,  true, false, false, false, false, []],
 ['edje'             , false,  true,  true, false,  true,  true, []],
+['emotion'          ,  true,  true, false, false,  true,  true, []],
 ]
 
 # We generate Efl_Config.h and config.h later, they will be available here
@@ -210,6 +211,7 @@ foreach package : subprojects
 endforeach
 
 subdir(join_paths('src', 'generic', 'evas'))
+subdir(join_paths('src', 'generic', 'emotion'))
 subdir(join_paths('data', 'edje', 'include'))
 
 
