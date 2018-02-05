@@ -64,6 +64,7 @@ add_global_arguments('-DEFL_BETA_API_SUPPORT=1', language: 'c')
 add_global_arguments('-DNEED_RUN_IN_TREE=1', language: 'c')
 add_global_arguments('-DEFL_EO_API_SUPPORT=1', language: 'objc')
 add_global_arguments('-DEFL_BETA_API_SUPPORT=1', language: 'objc')
+add_global_arguments('-DELM_INTERNAL_API_ARGESFSDFEFC=1', language: 'c')
 
 config_h = configuration_data()
 config_h.set_quoted('MODULE_ARCH', module_arch)
@@ -154,6 +155,7 @@ subprojects = [
 ['emotion'          ,  true,  true, false, false,  true,  true, []],
 ['ethumb'           ,  true,  true,  true, false, false, false, []],
 ['ethumb_client'    , false,  true,  true, false, false,  true, []],
+['elementary'       , false,  true,  true, false,  true, false, ['atspi']],
 ]
 
 # We generate Efl_Config.h and config.h later, they will be available here
@@ -215,6 +217,8 @@ endforeach
 subdir(join_paths('src', 'generic', 'evas'))
 subdir(join_paths('src', 'generic', 'emotion'))
 subdir(join_paths('data', 'edje', 'include'))
+subdir(join_paths('data', 'elementary', 'themes'))
+subdir(join_paths('data', 'elementary', 'objects'))
 
 
 if get_option('build-tests')
@@ -266,4 +270,11 @@ configure_file(
   output: 'Efl_Config.h',
   install_dir : join_paths(dir_include,'efl-'+version_major),
   configuration: efl_config_h
+)
+
+configure_file(
+  input: 'elm_intro.h.in',
+  output: 'elm_intro.h',
+  configuration: config_h,
+  install_dir : join_paths(dir_include,'elementary-'+version_major)
 )

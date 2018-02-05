@@ -226,6 +226,12 @@ option('ethumb_client',
   description : 'build evas'
 )
 
+option('elementary',
+  type : 'boolean',
+  value : true,
+  description : 'build evas'
+)
+
 option('build-id',
   type : 'string',
   value : 'none',
