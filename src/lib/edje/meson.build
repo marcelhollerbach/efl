@@ -7,6 +7,7 @@ edje_deps = [
 ]
 
 config_h.set('EDJE_CALC_CACHE', '1')
+config_h.set('EDJE_MULTISENSE', '1')
 
 pub_legacy_eo_files = [
   'efl_layout_calc.eo',
