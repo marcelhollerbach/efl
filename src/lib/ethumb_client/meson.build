@@ -25,7 +25,7 @@ ethumb_client = declare_dependency(
   include_directories: [include_directories('.')],
   link_with: ethumb_client_lib,
   sources : pub_eo_file_target,
-  dependencies: [eina, eo, efl],
+  dependencies: [eina, eo, efl, ethumb],
 )
 
 install_headers(ethumb_client_header_src,
