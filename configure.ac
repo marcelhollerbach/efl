@@ -5813,6 +5813,7 @@ pc/elementary.pc
 pc/elementary-cxx.pc
 pc/elput.pc
 pc/ecore-drm2.pc
+pc/exactness.pc
 dbus-services/org.enlightenment.Ethumb.service
 systemd-services/ethumb.service
 $po_makefile_in
