@@ -1,7 +1,7 @@
 
 buildsystem_src = [
   'buildsystem.h',
-  'buildsystem_autotools.c',
+  'buildsystem_meson.c',
 ]
 
 

@@ -14,7 +14,7 @@ bs_mod_get(char *path, size_t maxlen, const char *subsystem, const char *mod_nam
 {
    if (!getenv("EFL_RUN_IN_TREE")) return EINA_FALSE;
 
-   snprintf(path, maxlen, PACKAGE_BUILD_DIR"/src/modules/%s/lib%s"SHARED_LIB_SUFFIX, subsystem, mod_name);
+   snprintf(path, maxlen, PACKAGE_BUILD_DIR"/src/modules/%s/%s/lib%s"SHARED_LIB_SUFFIX, subsystem, mod_name, mod_name);
 
    return EINA_TRUE;
 }
@@ -24,7 +24,7 @@ bs_mod_dir_get(char *path, size_t maxlen, const char *subsystem, const char *mod
 {
    if (!getenv("EFL_RUN_IN_TREE")) return EINA_FALSE;
 
-   snprintf(path, maxlen, PACKAGE_BUILD_DIR"/src/modules/%s/%s/.libs", subsystem, mod_name);
+   snprintf(path, maxlen, PACKAGE_BUILD_DIR"/src/modules/%s/%s/", subsystem, mod_name);
 
    return EINA_TRUE;
 }

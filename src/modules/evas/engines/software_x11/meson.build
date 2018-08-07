@@ -26,3 +26,14 @@ config_h.set('BUILD_ENGINE_SOFTWARE_XLIB', '1')
 
 #ecore_x_deps carries all the extensions etc. so we dont have to search them twice
 engine_deps = [x11, ecore_x, ecore_x_deps]
+
+if get_option('evas-modules') == 'shared' and not evas_force_static.contains(engine)
+  shared_module(mod_full_name, engine_src,
+        include_directories : config_dir + [engine_include_dir],
+        dependencies : [eina, evas_pre] + engine_deps,
+        install : true,
+        install_dir : mod_install_dir,
+        name_suffix : sys_mod_extension
+      )
+      module_files += join_paths(mod_install_dir, 'lib'+mod_full_name + '.' + sys_mod_extension)
+endif
