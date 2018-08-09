@@ -75,7 +75,7 @@ static int _eldbus_init_count = 0;
 int _eldbus_log_dom = -1;
 int eldbus_model_log_dom = -1;
 
-/* We don't save ELDBUS_CONNECTION_TYPE_UNKNOWN in here so we need room for 
+/* We don't save ELDBUS_CONNECTION_TYPE_UNKNOWN in here so we need room for
  * last - 1 elements */
 static void *shared_connections[ELDBUS_CONNECTION_TYPE_LAST - 1];
 static Eina_Hash *address_connections = NULL;
@@ -135,14 +135,12 @@ eldbus_init(void)
         fputs("Eldbus: Unable to initialize eina\n", stderr);
         return 0;
      }
-
    if (!ecore_init())
      {
         fputs("Eldbus: Unable to initialize ecore\n", stderr);
         eina_shutdown();
         return 0;
      }
-
    _eldbus_log_dom = eina_log_domain_register("eldbus", EINA_COLOR_BLUE);
    if (_eldbus_log_dom < 0)
      {

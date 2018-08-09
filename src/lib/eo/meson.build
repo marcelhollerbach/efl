@@ -14,7 +14,7 @@ eo_src = [
   'eo_add_fallback.c',
   'eo_add_fallback.h',
   'eo_private.h',
-  'efl_future.c'
+  'eo_internal.h'
 ]
 
 eo_header = ['Eo.h']

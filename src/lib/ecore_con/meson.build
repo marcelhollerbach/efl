@@ -46,7 +46,7 @@ pub_eo_files = [
   'efl_net_server_ssl.eo',
   'efl_net_control_access_point.eo',
   'efl_net_control_technology.eo',
-  'efl_net_control.eo',
+  'efl_net_control_manager.eo',
   'efl_net_session.eo',
   'efl_net_ip_address.eo',
 ]
@@ -163,7 +163,7 @@ if get_option('network-backend') == 'none'
     'efl_net_control-none.c',
     'efl_net_session-none.c'
   ]
-else 
+else
   ecore_con_src += [
     'efl_net-connman.h',
     'efl_net-connman.c',
@@ -184,7 +184,7 @@ endif
 
 ecore_con_lib = library('ecore_con',
     ecore_con_src, pub_eo_file_target,
-    dependencies: [ecore, ecore_con_deps, http_parser, eldbus, eet, systemd, dl],
+    dependencies: [ecore, ecore_con_deps, http_parser, eldbus, eet, systemd, buildsystem, dl],
     include_directories : config_dir,
     install: true,
     c_args : package_c_args,

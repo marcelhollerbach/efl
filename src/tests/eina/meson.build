@@ -7,6 +7,7 @@ eina_test_src = files(
 'eina_test_ustr.c',
 'eina_test_binshare.c',
 'eina_test_binbuf.c',
+'eina_test_debug.c',
 'eina_test_inarray.c',
 'eina_test_array.c',
 'eina_test_clist.c',
@@ -51,7 +52,9 @@ eina_test_src = files(
 'eina_test_safepointer.c',
 'eina_test_slice.c',
 'eina_test_freeq.c',
-'eina_test_slstr.c')
+'eina_test_slstr.c',
+'eina_test_vpath.c'
+)
 
 
 eina_test_exe = executable('eina_suite',

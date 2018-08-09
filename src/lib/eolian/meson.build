@@ -7,6 +7,7 @@ eolian_src = [
 'eolian_priv.h',
 'eolian_database.c',
 'eolian_database.h',
+'database_check.c',
 'database_class.c',
 'database_class_api.c',
 'database_function.c',

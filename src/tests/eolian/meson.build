@@ -7,7 +7,8 @@ eolian_test_src = [
 'eolian_generation.c',
 'eolian_generated_future.c',
 'eolian_suite.c',
-'eolian_suite.h'
+'eolian_suite.h',
+'eolian_static.c'
 ]
 
 priv_eo_file_target = []
@@ -28,6 +29,7 @@ eolian_suite = executable('eolian_suite',
   c_args : [
   '-DEOLIAN_GEN="'+eolian_gen.full_path()+'"',
   '-DTESTS_BUILD_DIR="'+meson.current_build_dir()+'"',
+  '-DEO_SRC_DIR="'+join_paths(meson.source_root(), 'src', 'lib')+'"',
   '-DTESTS_SRC_DIR="'+meson.current_source_dir()+'"']
 )
 

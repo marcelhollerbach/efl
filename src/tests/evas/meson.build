@@ -1,5 +1,6 @@
 evas_suite_src = [
   'evas_suite.c',
+  'evas_test_new.c',
   'evas_test_init.c',
   'evas_test_object.c',
   'evas_test_object_smart.c',

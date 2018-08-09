@@ -16,12 +16,13 @@ eo_suite_src = [
   'eo_test_value.c',
   'eo_test_event.c',
   'eo_test_threaded_calls.c',
-  'eo_test_init.c'
+  'eo_test_init.c',
+  'eo_test_lifecycle.c'
 ]
 
 eo_suite = executable('eo_suite',
   eo_suite_src,
-  dependencies: [eo, check],
+  dependencies: [eo, check, valgrind],
   c_args : [
   '-DTESTS_BUILD_DIR="'+meson.current_build_dir()+'"',
   '-DTESTS_SRC_DIR="'+meson.current_source_dir()+'"']

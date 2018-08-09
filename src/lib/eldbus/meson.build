@@ -6,7 +6,8 @@ pub_eo_files = [
   'eldbus_model_proxy.eo',
   'eldbus_model_method.eo',
   'eldbus_model_arguments.eo',
-  'eldbus_model_signal.eo'
+  'eldbus_model_signal.eo',
+  'eldbus_model.eo'
 ]
 
 foreach eo_file : pub_eo_files

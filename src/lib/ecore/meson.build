@@ -21,12 +21,18 @@ foreach eo_file : pub_legacy_eo_files
 endforeach
 
 pub_eo_files = [
+  'efl_app.eo',
   'efl_loop.eo',
   'efl_loop_consumer.eo',
   'efl_loop_fd.eo',
   'efl_loop_handler.eo',
   'efl_loop_message.eo',
   'efl_loop_message_handler.eo',
+  'efl_exe.eo',
+  'efl_thread.eo',
+  'efl_threadio.eo',
+  'efl_appthread.eo',
+  'efl_task.eo',
   'efl_io_closer_fd.eo',
   'efl_io_positioner_fd.eo',
   'efl_io_reader_fd.eo',
@@ -46,18 +52,17 @@ pub_eo_files = [
   'efl_interpolator_divisor.eo',
   'efl_interpolator_bounce.eo',
   'efl_interpolator_spring.eo',
-  'efl_interpolator_cubic_bezier.eo'
-]
-#split for later multilang eolian files stuff
-pub_eo_files += [
-  'efl_promise.eo',
+  'efl_interpolator_cubic_bezier.eo',
+  'efl_loop_message_future_handler.eo',
+  'efl_loop_message_future.eo',
   'efl_model_item.eo',
   'efl_model_container.eo',
   'efl_model_container_item.eo',
   'efl_model_composite_boolean.eo',
   'efl_model_composite_boolean_children.eo',
   'efl_model_composite_selection.eo',
-  'efl_model_composite_selection_children.eo'
+  'efl_model_composite_selection_children.eo',
+  'efl_model_composite.eo'
 ]
 
 foreach eo_file : pub_eo_files
@@ -85,6 +90,7 @@ ecore_header_src = [
 ]
 
 ecore_src = [
+  'efl_app.c',
   'ecore.c',
   'ecore_alloc.c',
   'ecore_anim.c',
@@ -104,7 +110,10 @@ ecore_src = [
   'efl_loop_fd.c',
   'efl_loop_handler.c',
   'efl_loop_message.c',
+  'efl_loop_message_future.c',
   'efl_loop_message_handler.c',
+  'efl_loop_message_future_handler.c',
+  'efl_task.c',
   'efl_io_closer_fd.c',
   'efl_io_positioner_fd.c',
   'efl_io_reader_fd.c',
@@ -116,11 +125,11 @@ ecore_src = [
   'efl_io_file.c',
   'efl_io_copier.c',
   'efl_io_buffered_stream.c',
-  'efl_promise.c',
   'efl_model_item.c',
   'efl_model_container.c',
   'efl_model_container_item.c',
   'efl_model_container_private.h',
+  'efl_model_composite.c',
   'efl_model_composite_boolean.c',
   'efl_model_composite_selection.c',
   'efl_model_accessor_view.c',
@@ -178,7 +187,7 @@ endif
 
 ecore_lib = library('ecore',
     ecore_src, pub_eo_file_target,
-    dependencies: [eina, eo, efl, m, ecore_deps],
+    dependencies: [eina, eo, efl, m, buildsystem, ecore_deps],
     include_directories : config_dir + [include_directories(join_paths('..','..'))],
     install: true,
     c_args : package_c_args,
