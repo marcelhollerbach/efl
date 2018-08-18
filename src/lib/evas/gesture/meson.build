@@ -7,6 +7,8 @@ pub_eo_files = [
   'efl_canvas_gesture_manager.eo'
 ]
 
+evas_gesture_eo_files = pub_eo_files
+
 foreach eo_file : pub_eo_files
   pub_eo_file_target += custom_target('eolian_gen_' + eo_file,
     input : eo_file,
@@ -43,8 +45,10 @@ endforeach
 pub_eo_types_files = [
   'efl_canvas_gesture_types.eot',
 ]
+evas_gesture_eot_files = pub_eo_types_files
 
 pub_evas_eot_files += files(pub_eo_types_files)
+
 
 foreach eo_file : pub_eo_types_files
   pub_eo_file_target += custom_target('eolian_gen_' + eo_file,
