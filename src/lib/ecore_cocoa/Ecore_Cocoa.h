@@ -206,9 +206,8 @@ typedef enum
 {
    ECORE_COCOA_CNP_TYPE_UNKNOWN = 0, /**< Undefined type */
    ECORE_COCOA_CNP_TYPE_STRING  = (1 << 0), /**< String type (pure text) */
-   ECORE_COCOA_CNP_TYPE_MARKUP  = (1 << 1), /**< Elementary markup */
-   ECORE_COCOA_CNP_TYPE_IMAGE   = (1 << 2), /**< Image (all formats) */
-   ECORE_COCOA_CNP_TYPE_HTML    = (1 << 3) /**< HTML */
+   ECORE_COCOA_CNP_TYPE_IMAGE   = (1 << 1), /**< Image (all formats) */
+   ECORE_COCOA_CNP_TYPE_HTML    = (1 << 2) /**< HTML */
 } Ecore_Cocoa_Cnp_Type;
 
 

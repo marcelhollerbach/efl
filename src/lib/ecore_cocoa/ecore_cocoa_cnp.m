@@ -3,7 +3,6 @@
 #endif
 
 #include <Eina.h>
-#include <Evas.h>
 #import <Cocoa/Cocoa.h>
 #import "ecore_cocoa_window.h"
 #include "ecore_cocoa_private.h"
@@ -24,18 +23,6 @@ ecore_cocoa_clipboard_set(const void           *data,
         str = [[NSString alloc] initWithBytes: data
                                        length: size
                                      encoding: NSUTF8StringEncoding];
-        if (str)
-          [objects addObject: str];
-     }
-   if (type & ECORE_COCOA_CNP_TYPE_MARKUP)
-     {
-        char *utf8;
-
-        utf8 = evas_textblock_text_markup_to_utf8(NULL, (const char *)data);
-        str = [[NSString alloc] initWithBytes: utf8
-                                       length: strlen(utf8) // XXX strlen() ?
-                                     encoding: NSUTF8StringEncoding];
-        free(utf8);
         if (str)
           [objects addObject: str];
      }
@@ -79,8 +66,7 @@ ecore_cocoa_clipboard_get(int                  *size,
 
    classes = [[NSMutableArray alloc] init];
 
-   if ((type & ECORE_COCOA_CNP_TYPE_STRING) ||
-       (type & ECORE_COCOA_CNP_TYPE_MARKUP))
+   if (type & ECORE_COCOA_CNP_TYPE_STRING)
      {
         string_class = YES;
         [classes addObject: [NSString class]];
