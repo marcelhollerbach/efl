@@ -6,6 +6,8 @@ edje_deps = [
   embryo, efreet, eio, ephysics
 ]
 
+edje_pub_deps = [m, evas, eo, efl, luajit, ephysics]
+
 config_h.set('EDJE_CALC_CACHE', '1')
 
 if get_option('edje-sound-and-video')
@@ -154,7 +156,7 @@ edje = declare_dependency(
   include_directories: [include_directories('.')],
   link_with: edje_lib,
   sources : pub_eo_file_target + priv_eo_file_target,
-  dependencies: [eina, eo, efl, ecore_file, luajit, ecore_input, ecore_imf, ecore_imf_evas, embryo, efreet, eio, ephysics, evas],
+  dependencies: edje_pub_deps,
 )
 
 install_data(pub_eo_files,

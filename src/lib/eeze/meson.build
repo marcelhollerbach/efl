@@ -1,4 +1,5 @@
 eeze_deps = []
+eeze_pub_deps = [eina, efl]
 pub_eo_file_target = []
 
 eeze_header_src = [
@@ -47,10 +48,9 @@ else
   endif
 endif
 
-eeze_deps += libudev
-eeze_deps += libmount
-
 options_to_check = ['eject', 'mount', 'unmount']
+
+eeze_deps += [libudev, libmount]
 
 foreach option : options_to_check
   val = get_option(option+'-path')
@@ -78,7 +78,7 @@ config_h.set_quoted('EEZE_UNMOUNT_BIN', unmount_bin)
 
 eeze_lib = library('eeze',
     eeze_src, pub_eo_file_target,
-    dependencies: [ecore, ecore_file, buildsystem, eeze_deps],
+    dependencies: eeze_deps + eeze_pub_deps + [ecore, ecore_file, buildsystem, eeze_deps],
     include_directories : config_dir,
     install: true,
     c_args : package_c_args,
@@ -88,7 +88,7 @@ eeze = declare_dependency(
   include_directories: [include_directories('.')],
   link_with: eeze_lib,
   sources : pub_eo_file_target + priv_eo_file_target,
-  dependencies: [eina],
+  dependencies: eeze_pub_deps,
 )
 
 install_headers(eeze_header_src,

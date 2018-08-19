@@ -1,4 +1,5 @@
-eet_deps = []
+eet_deps = [crypto, jpeg, rg_etc, m]
+eet_pub_deps = [eina, emile, efl]
 
 eet_header_src = [
   'Eet.h'
@@ -17,13 +18,9 @@ eet_src = [
   'eet_utils.c',
 ]
 
-eet_deps += crypto
-eet_deps += jpeg
-eet_deps += rg_etc
-
 eet_lib = library('eet',
     eet_src, pub_eo_file_target,
-    dependencies: [eet_deps, eina, emile, m],
+    dependencies: eet_deps + eet_pub_deps,
     include_directories : config_dir,
     install: true,
 )
@@ -32,7 +29,7 @@ eet = declare_dependency(
   include_directories: [include_directories('.')],
   link_with: eet_lib,
   sources : pub_eo_file_target + priv_eo_file_target,
-  dependencies: [eina, eo, emile, efl],
+  dependencies: eet_pub_deps,
 )
 
 install_headers(eet_header_src,

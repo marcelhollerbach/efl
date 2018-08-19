@@ -60,6 +60,7 @@ elif target_machine.system() == 'bsd'
 endif
 
 eio_deps = [ecore, ecore_file, eet, eo, eina, efl, emile, efreet_mime]
+eio_pub_deps = [eina, eet]
 
 eio_lib = library('eio',
     eio_src, pub_eo_file_target,
@@ -74,7 +75,7 @@ eio = declare_dependency(
   include_directories: [include_directories('.')],
   link_with: eio_lib,
   sources : pub_eo_file_target + priv_eo_file_target,
-  dependencies: [eina, eet],
+  dependencies: eio_pub_deps,
 )
 
 install_data(pub_eo_files,

@@ -1,3 +1,6 @@
+ecore_audio_deps = [ecore]
+ecore_audio_pub_deps = [eina, eo]
+
 pub_eo_files = [
   'ecore_audio.eo',
   'ecore_audio_in.eo',
@@ -21,7 +24,6 @@ foreach eo_file : pub_eo_files
                            '-gch', '@INPUT@'])
 endforeach
 
-ecore_audio_deps = []
 
 ecore_audio_header_src = [
   'Ecore_Audio.h',
@@ -67,7 +69,7 @@ endif
 
 ecore_audio_lib = library('ecore-audio',
     ecore_audio_src, pub_eo_file_target,
-    dependencies: [ecore, m, ecore_audio_deps],
+    dependencies: ecore_audio_pub_deps + [m] + ecore_audio_deps,
     include_directories : config_dir,
     install: true,
 )
@@ -76,7 +78,7 @@ ecore_audio = declare_dependency(
   include_directories: [include_directories('.')],
   link_with: ecore_audio_lib,
   sources : pub_eo_file_target + priv_eo_file_target,
-  dependencies: [eina, eo, efl],
+  dependencies: ecore_audio_pub_deps,
 )
 
 install_data(pub_eo_files,

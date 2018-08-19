@@ -1,4 +1,5 @@
-ecore_input_deps = []
+ecore_input_deps = [ecore]
+ecore_input_pub_deps = [eina, eo]
 
 ecore_input_header_src = [
   'Ecore_Input.h'
@@ -16,9 +17,10 @@ if get_option('eeze')
   ecore_input_deps += eeze
 endif
 
+
 ecore_input_lib = library('ecore_input',
     ecore_input_src, pub_eo_file_target,
-    dependencies: [ecore, ecore_input_deps],
+    dependencies: ecore_input_pub_deps + ecore_input_deps,
     include_directories : config_dir,
     install: true,
 )
@@ -27,7 +29,7 @@ ecore_input = declare_dependency(
   include_directories: [include_directories('.')],
   link_with: ecore_input_lib,
   sources : pub_eo_file_target + priv_eo_file_target,
-  dependencies: [eina],
+  dependencies: ecore_input_pub_deps,
 )
 
 install_headers(ecore_input_header_src,

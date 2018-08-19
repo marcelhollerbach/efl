@@ -1,4 +1,5 @@
-elput_deps = [ecore, ecore_input, eldbus, eeze, eo, m, eina]
+elput_deps = [ecore, ecore_input, eeze, eo, m]
+elput_pub_deps = [eina, eldbus]
 pub_eo_file_target = []
 
 elput_header_src = [
@@ -24,7 +25,7 @@ endif
 
 elput_lib = library('elput',
     elput_src, pub_eo_file_target,
-    dependencies: [ elput_deps],
+    dependencies: elput_pub_deps + elput_deps,
     include_directories : config_dir,
     install: true,
 )
@@ -33,7 +34,7 @@ elput = declare_dependency(
   include_directories: [include_directories('.')],
   link_with: elput_lib,
   sources : pub_eo_file_target + priv_eo_file_target,
-  dependencies: [eina, eldbus],
+  dependencies: elput_pub_deps,
 )
 
 install_headers(elput_header_src,

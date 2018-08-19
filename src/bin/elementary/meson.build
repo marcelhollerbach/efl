@@ -157,7 +157,7 @@ elementary_test_src = [
 
 elementary_test = executable('elementary_test',
         elementary_test_src,
-        dependencies: elementary,
+        dependencies: [elementary] + elementary_deps + elementary_pub_deps,
         install: true,
         c_args : package_c_args + [
           '-Delementary_test_BIN_DIR="'+dir_bin+'"',
@@ -172,7 +172,7 @@ elementary_config_src = [
 
 elementary_config = executable('elementary_config',
         elementary_config_src,
-        dependencies: elementary,
+        dependencies: [elementary] + elementary_deps + elementary_pub_deps,
         install: true,
         c_args : package_c_args,
 )
@@ -183,7 +183,7 @@ elementary_quicklaunch_src = [
 
 elementary_quicklaunch = executable('elementary_quicklaunch',
         elementary_quicklaunch_src,
-        dependencies: elementary,
+        dependencies: [elementary] + elementary_deps + elementary_pub_deps,
         install: true,
         c_args : package_c_args,
 )
@@ -194,7 +194,7 @@ elementary_codegen_src = [
 
 elementary_codegen = executable('elementary_codegen',
         elementary_codegen_src,
-        dependencies: elementary,
+        dependencies: [elementary] + elementary_deps + elementary_pub_deps,
         install: true,
         c_args : package_c_args,
 )
@@ -211,7 +211,7 @@ elm_prefs_cc_src = [
 
 elm_prefs_cc = executable('elm_prefs_cc',
         elm_prefs_cc_src,
-        dependencies: [elementary] + [elementary_deps],
+        dependencies: [elementary] + elementary_deps + elementary_pub_deps,
         install: true,
         c_args : package_c_args,
 )
@@ -222,7 +222,7 @@ elementary_run_src = [
 
 elementary_run = executable('elementary_run',
         elementary_run_src,
-        dependencies: elementary,
+        dependencies: [elementary] + elementary_deps + elementary_pub_deps,
         install: true,
         c_args : package_c_args,
 )

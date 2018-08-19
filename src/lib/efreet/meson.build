@@ -29,10 +29,11 @@ efreet_src = [
 ]
 
 efreet_deps = [eet, ecore, ecore_con, ecore_file, eo, efl, eina, emile, ecore_ipc]
+efreet_pub_deps = [eina, eo, efl]
 
 efreet_lib = library('efreet',
     efreet_src,
-    dependencies: [eina, eo, efl, m, efreet_deps],
+    dependencies: efreet_pub_deps + [m] + efreet_deps,
     include_directories : config_dir + [include_directories('.')],
     install: true,
     c_args : [package_c_args, '-DDATA_DIR="'+dir_data+'"'],
@@ -41,12 +42,12 @@ efreet_lib = library('efreet',
 efreet = declare_dependency(
   include_directories: [include_directories('.')],
   link_with: efreet_lib,
-  dependencies: [eina, eo, efl],
+  dependencies: efreet_pub_deps,
 )
 
 efreet_mime_lib = library('efreet_mime',
     'efreet_mime.c',
-    dependencies: [eina, eo, efl, m, efreet, efreet_deps],
+    dependencies: efreet_pub_deps + [m, efreet, efreet_deps],
     include_directories : config_dir + [include_directories('.')],
     install: true,
     c_args : package_c_args,
@@ -55,12 +56,12 @@ efreet_mime_lib = library('efreet_mime',
 efreet_mime = declare_dependency(
   include_directories: [include_directories('.')],
   link_with: efreet_mime_lib,
-  dependencies: [eina, eo, efl],
+  dependencies: efreet_pub_deps
 )
 
 efreet_trash_lib = library('efreet_trash',
     'efreet_trash.c',
-    dependencies: [eina, eo, efl, m, efreet, efreet_deps],
+    dependencies: efreet_pub_deps + [efreet, efreet_deps],
     include_directories : config_dir + [include_directories('.')],
     install: true,
     c_args : package_c_args,
@@ -69,7 +70,7 @@ efreet_trash_lib = library('efreet_trash',
 efreet_trash = declare_dependency(
   include_directories: [include_directories('.')],
   link_with: efreet_trash_lib,
-  dependencies: [eina, eo, efl],
+  dependencies: efreet_pub_deps,
 )
 
 install_headers(efreet_header_src,

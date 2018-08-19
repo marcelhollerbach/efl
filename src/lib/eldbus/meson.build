@@ -1,4 +1,5 @@
-eldbus_deps = []
+eldbus_deps = [ecore]
+eldbus_pub_deps = [eina, eo, efl]
 
 pub_eo_files = [
   'eldbus_model_connection.eo',
@@ -91,7 +92,7 @@ eldbus_deps += dependency('dbus-1')
 
 eldbus_lib = library('eldbus',
     eldbus_src, pub_eo_file_target,
-    dependencies: [ecore, eldbus_deps],
+    dependencies: eldbus_pub_deps + eldbus_deps,
     include_directories : config_dir,
     install: true,
 )
@@ -100,7 +101,7 @@ eldbus = declare_dependency(
   include_directories: [include_directories('.')],
   link_with: eldbus_lib,
   sources : pub_eo_file_target + priv_eo_file_target,
-  dependencies: [eina, eo, efl],
+  dependencies: eldbus_pub_deps,
 )
 
 install_data(pub_eo_files,

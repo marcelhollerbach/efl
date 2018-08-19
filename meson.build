@@ -235,10 +235,12 @@ foreach package : subprojects
 
     if package_name != 'evas'
       tmp_lib = get_variable(package_name+'_lib')
-      tmp_dep = get_variable(package_name)
+      tmp_deps = get_variable(package_name+'_deps')
+      tmp_pub_deps = get_variable(package_name+'_pub_deps')
       pkgconfig.generate(tmp_lib,
-        subdirs : dir_package_include,
-        libraries : tmp_dep
+        subdirs : package_version_name,
+        version : meson.project_version(),
+        libraries : [tmp_deps] + tmp_pub_deps,
       )
     endif
 

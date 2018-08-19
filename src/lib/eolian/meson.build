@@ -1,3 +1,6 @@
+eolian_pub_deps = [eina]
+eolian_deps = []
+
 eolian_src = [
 'eo_lexer.c',
 'eo_lexer.h',

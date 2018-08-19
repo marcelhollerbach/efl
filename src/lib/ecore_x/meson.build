@@ -1,4 +1,5 @@
-ecore_x_deps = []
+ecore_x_deps = [ecore, dl, m, ecore_input]
+ecore_x_pub_deps = [eina, efl]
 
 ecore_x_header_src = [
   'Ecore_X.h',
@@ -113,6 +114,8 @@ endforeach
 ecore_x_deps += x11
 ecore_x_deps += xcb
 ecore_x_deps += x11_xcb
+
+
 # there are a few special cases
 cc.has_header_symbol('X11/XKBlib.h', 'XkbSetDetectableAutoRepeat',
   dependencies : [x11, xcb]
@@ -121,7 +124,7 @@ config_h.set('ECORE_XKB', '1')
 
 ecore_x_lib = library('ecore_x',
     ecore_x_src, pub_eo_file_target,
-    dependencies: [ecore, dl, m, ecore_input, ecore_x_deps],
+    dependencies: ecore_x_pub_deps + ecore_x_deps,
     include_directories : config_dir,
     install: true,
 )
@@ -130,7 +133,7 @@ ecore_x = declare_dependency(
   include_directories: [include_directories('.')],
   link_with: ecore_x_lib,
   sources : pub_eo_file_target + priv_eo_file_target,
-  dependencies: [eina],
+  dependencies: ecore_x_pub_deps,
 )
 
 install_headers(ecore_x_header_src,

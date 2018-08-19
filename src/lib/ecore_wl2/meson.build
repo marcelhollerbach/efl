@@ -1,4 +1,5 @@
-ecore_wl2_deps = []
+ecore_wl2_deps = [dependency('wayland-client'), dependency('wayland-server'), dependency('xkbcommon'), wayland_protocol, dependency('wayland-client')]
+ecore_wl2_pub_deps = [eina, wayland_protocol]
 
 ecore_wl2_header_src = [
   'Ecore_Wl2.h'
@@ -17,15 +18,9 @@ ecore_wl2_src = [
   'ecore_wl2_surface.c'
 ]
 
-ecore_wl2_deps += dependency('wayland-client')
-ecore_wl2_deps += dependency('wayland-server')
-ecore_wl2_deps += dependency('xkbcommon')
-ecore_wl2_deps += wayland_protocol
-ecore_wl2_deps += dependency('wayland-client')
-
 ecore_wl2_lib = library('ecore_wl2',
     ecore_wl2_src, pub_eo_file_target,
-    dependencies: [dl, m, eina, ecore, ecore_input, ecore_wl2_deps, libdrm],
+    dependencies: ecore_wl2_pub_deps + [dl, m, ecore, ecore_input, ecore_wl2_deps, libdrm],
     include_directories : config_dir,
     install: true,
 )
@@ -34,7 +29,7 @@ ecore_wl2 = declare_dependency(
   include_directories: [include_directories('.')],
   link_with: ecore_wl2_lib,
   sources : pub_eo_file_target + priv_eo_file_target,
-  dependencies: [eina, wayland_protocol],
+  dependencies: ecore_wl2_pub_deps,
 )
 
 install_headers(ecore_wl2_header_src,

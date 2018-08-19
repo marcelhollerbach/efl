@@ -1,3 +1,6 @@
+efl_deps = []
+efl_pub_deps = [eo]
+
 efl_header_src = [
   'Efl.h',
   'Efl_Model_Common.h'
@@ -16,7 +19,7 @@ efl_lib = library('efl',
 efl = declare_dependency(
   include_directories: [include_directories('.'), config_dir],
   link_with: efl_lib,
-  dependencies: [eo],
+  dependencies: efl_deps + efl_pub_deps,
   sources : pub_eo_file_target
 )
 

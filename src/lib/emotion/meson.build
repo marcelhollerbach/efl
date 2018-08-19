@@ -36,7 +36,8 @@ emotion_src = [
   'emotion_main.c'
 ]
 
-emotion_deps = [eina, eo, ecore, eet, evas, efl, eio, emile]
+emotion_deps = [ecore, eet, evas, eio, emile]
+emotion_pub_deps = [eina, eo, efl]
 
 if get_option('eeze') == true
   emotion_deps += [eeze]
@@ -44,7 +45,7 @@ endif
 
 emotion_lib = library('emotion',
     emotion_src, pub_eo_file_target, priv_eo_file_target,
-    dependencies: [emotion_deps],
+    dependencies: emotion_deps + emotion_pub_deps,
     include_directories : config_dir + [include_directories('.')],
     install: true,
     c_args : package_c_args,
@@ -54,7 +55,7 @@ emotion = declare_dependency(
   include_directories: [include_directories('.')],
   link_with: emotion_lib,
   sources : pub_eo_file_target + priv_eo_file_target,
-  dependencies: [eina, eo, efl],
+  dependencies: emotion_pub_deps,
 )
 
 install_data(pub_legacy_eo_files,

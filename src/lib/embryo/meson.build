@@ -1,3 +1,7 @@
+embryo_deps = [ecore]
+embryo_pub_deps = [eina, eo, efl]
+
+
 embryo_header_src = [
   'Embryo.h'
 ]
@@ -17,7 +21,7 @@ embryo_deps = [eina, m]
 
 embryo_lib = library('embryo',
     embryo_src,
-    dependencies: [eina, eo, efl, m, embryo_deps, buildsystem],
+    dependencies: [m, buildsystem] + embryo_deps,
     include_directories : config_dir + [include_directories(join_paths('..','..'))],
     install: true,
     c_args : package_c_args,
@@ -27,7 +31,7 @@ embryo = declare_dependency(
   include_directories: [include_directories('.')],
   link_with: embryo_lib,
   sources : pub_eo_file_target + priv_eo_file_target,
-  dependencies: [eina, eo, efl],
+  dependencies: embryo_pub_deps,
 )
 
 install_headers(embryo_header_src,

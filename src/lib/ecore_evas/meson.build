@@ -1,4 +1,5 @@
 ecore_evas_deps = [eina, ecore_input_evas, ecore_input, ecore, eet, evas, efl, eo, eina, emile]
+ecore_evas_pub_deps = [evas, ecore]
 pub_eo_file_target = []
 
 ecore_evas_header_src = [

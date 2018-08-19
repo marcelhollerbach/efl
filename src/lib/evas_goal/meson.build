@@ -1,3 +1,6 @@
+evas_goal_deps = evas_deps
+evas_goal_pub_deps = []
+
 evas_lib = library('evas',
     'empty.c',
     #all the source code is coming from evas_pre_lib_dep

@@ -1,4 +1,5 @@
 eina_deps = []
+eina_pub_deps = [thread_dep]
 
 public_sub_headers = [
 'eina_promise.h',
@@ -366,16 +367,17 @@ eina_lib = shared_library('eina', sources,
                    dependencies: [m, rt, dl, execinfo, iconv, eina_deps, thread_dep, eina_mem_pools],
                    install: true)
 
+
 eina = declare_dependency(
   include_directories: [include_directories('.')] + config_dir,
-  dependencies : [thread_dep],
+  dependencies : eina_pub_deps + eina_deps,
   link_with: eina_lib,
 )
 
-install_headers(public_headers, 
+install_headers(public_headers,
   install_dir : dir_package_include,
 )
-install_headers(public_sub_headers, 
+install_headers(public_sub_headers,
   install_dir : dir_package_include,
   subdir : 'eina'
 )

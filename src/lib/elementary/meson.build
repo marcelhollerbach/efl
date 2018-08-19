@@ -870,7 +870,9 @@ elementary_src = [
   'efl_ui_widget_focus_manager.c'
 ]
 
-elementary_deps = [eina, emile, eet, eo, efl, evas, ecore, ecore_evas, ecore_file, ecore_input, edje, ethumb, ethumb_client, emotion, ecore_imf, ecore_con, eldbus, efreet, efreet_mime, efreet_trash, eio, atspi, dl]
+elementary_deps = [emile, eo, efl, edje, ethumb, ethumb_client, emotion, ecore_imf, ecore_con, eldbus, efreet, efreet_mime, efreet_trash, eio, atspi, dl]
+elementary_pub_deps = [eina, eet, evas, ecore, ecore_evas, ecore_file, ecore_input, ecore_imf, ecore_con,
+                       edje, eldbus, efreet, efreet_mime, efreet_trash, ethumb_client, efl]
 
 elm_options = configuration_data()
 
@@ -922,7 +924,7 @@ c = configure_file(
 
 elementary_lib = library('elementary',
     elementary_src, pub_eo_file_target, priv_eo_file_target, c,
-    dependencies: [elementary_deps],
+    dependencies: elementary_pub_deps + elementary_deps,
     include_directories : config_dir + [include_directories('.')] + [include_directories(join_paths('..', '..', '..'))] + [ecore_evas_wayland_engine_include_dir],
     install: true,
     c_args : package_c_args + ['-DELEMENTARY_BUILD=1','-DEFL_BUILD=1'],
@@ -932,8 +934,7 @@ elementary = declare_dependency(
   include_directories: [include_directories('.')],
   link_with: elementary_lib,
   sources : pub_eo_file_target + priv_eo_file_target,
-  dependencies: [eina, eet, evas, ecore, ecore_evas, ecore_file, ecore_input, ecore_imf, ecore_con,
-                 edje, eldbus, efreet, efreet_mime, efreet_trash, ethumb_client, efl],
+  dependencies: elementary_pub_deps,
 )
 
 install_data(pub_eo_files,

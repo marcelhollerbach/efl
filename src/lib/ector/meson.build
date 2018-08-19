@@ -1,4 +1,6 @@
 ector_deps = [eina, emile, eet, eo, efl]
+ector_pub_deps = [eina, efl]
+
 pub_eo_file_target = []
 
 ector_header_src = [
@@ -61,7 +63,7 @@ endforeach
 
 ector_lib = library('ector',
     ector_src, pub_eo_file_target,
-    dependencies: [triangulator, freetype, draw, m, ector_deps],
+    dependencies: ector_pub_deps + [triangulator, freetype, draw, m] + ector_deps,
     include_directories : config_dir,
     install: true,
 )
@@ -70,7 +72,7 @@ ector = declare_dependency(
   include_directories: [include_directories('.')],
   link_with: ector_lib,
   sources : pub_eo_file_target + priv_eo_file_target,
-  dependencies: [eina, efl],
+  dependencies: ector_pub_deps,
 )
 
 install_headers(ector_header_src,

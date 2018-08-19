@@ -1,3 +1,6 @@
+ecore_deps = []
+ecore_pub_deps = [eina, eo, efl]
+
 pub_legacy_eo_files = [
   'ecore_exe.eo',
   'ecore_event_message.eo',
@@ -163,8 +166,6 @@ else
   ecore_src += ['ecore_signal.c', 'ecore_exe_posix.c']
 endif
 
-ecore_deps = []
-
 if get_option('glib') == true
   ecore_deps += dependency('glib-2.0')
   ecore_deps += dependency('gthread-2.0')
@@ -187,7 +188,7 @@ endif
 
 ecore_lib = library('ecore',
     ecore_src, pub_eo_file_target,
-    dependencies: [eina, eo, efl, m, buildsystem, ecore_deps],
+    dependencies: ecore_pub_deps + [m, buildsystem, ecore_deps],
     include_directories : config_dir + [include_directories(join_paths('..','..'))],
     install: true,
     c_args : package_c_args,
@@ -197,7 +198,7 @@ ecore = declare_dependency(
   include_directories: [include_directories('.')],
   link_with: ecore_lib,
   sources : pub_eo_file_target + priv_eo_file_target,
-  dependencies: [eina, eo, efl],
+  dependencies: ecore_pub_deps,
 )
 
 install_data(pub_eo_files,

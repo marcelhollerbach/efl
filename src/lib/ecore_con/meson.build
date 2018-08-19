@@ -1,6 +1,5 @@
 ecore_con_deps = []
-
-
+ecore_con_pub_deps = [eina, eo, efl, ecore]
 
 if target_machine.system() == 'windows' or target_machine.system() == 'cygwin'
   ipv6 = cc.compiles('''
@@ -207,7 +206,7 @@ ecore_con = declare_dependency(
   include_directories: [include_directories('.')],
   link_with: ecore_con_lib,
   sources : pub_eo_file_target + priv_eo_file_target,
-  dependencies: [eina, eo, efl],
+  dependencies: ecore_con_pub_deps,
 )
 
 install_data(pub_eo_files,

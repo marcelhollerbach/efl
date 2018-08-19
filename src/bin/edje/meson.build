@@ -1,5 +1,14 @@
 subdir('epp')
 
+edje_bin_deps = [
+  eina, eo, efl, m,
+  luajit, eet, evas,
+  ecore_file, ecore_input,
+  ecore_imf, ecore_imf_evas,
+  embryo, efreet, eio, ephysics,
+  edje, ecore_evas
+]
+
 edje_cc_src = [
   'edje_multisense_convert.h',
   'edje_cc.h',
@@ -15,7 +24,7 @@ edje_cc_src = [
 
 edje_cc = executable('edje_cc',
         edje_cc_src,
-        dependencies: [edje, eet, ecore_evas, ecore_file],
+        dependencies: [edje_bin_deps, eet, ecore_evas, ecore_file],
         install: true,
         c_args : package_c_args,
         link_args : bin_linker_args
@@ -30,49 +39,49 @@ edje_decc_src = [
 
 edje_decc = executable('edje_decc',
         edje_decc_src,
-        dependencies: [edje, eet, ecore_file, ecore_evas],
+        dependencies: [edje_bin_deps, eet, ecore_file, ecore_evas],
         install: true,
         c_args : package_c_args,
 )
 
 edje_player = executable('edje_player',
         'edje_player.c',
-        dependencies: [edje, eet, ecore, eio, ecore_evas],
+        dependencies: [edje_bin_deps, eet, ecore, eio, ecore_evas],
         install: true,
         c_args : package_c_args,
 )
 
 edje_inspector = executable('edje_inspector',
         'edje_inspector.c',
-        dependencies: [edje, eet, ecore, eio, ecore_evas],
+        dependencies: [edje_bin_deps, eet, ecore, eio, ecore_evas],
         install: true,
         c_args : package_c_args,
 )
 
 edje_external_inspector = executable('edje_external_inspector',
         'edje_external_inspector.c',
-        dependencies: [edje, eet, ecore, eio, ecore_evas],
+        dependencies: [edje_bin_deps, eet, ecore, eio, ecore_evas],
         install: true,
         c_args : package_c_args,
 )
 
 edje_codegen = executable('edje_codegen',
         'edje_codegen.c',
-        dependencies: [edje, eet, ecore, eio, ecore_evas],
+        dependencies: [edje_bin_deps, eet, ecore, eio, ecore_evas],
         install: true,
         c_args : package_c_args,
 )
 
 edje_pick = executable('edje_pick',
         'edje_pick.c',
-        dependencies: [edje, eet, ecore, eio, ecore_evas],
+        dependencies: [edje_bin_deps, eet, ecore, eio, ecore_evas],
         install: true,
         c_args : package_c_args,
 )
 
 edje_watch = executable('edje_watch',
         'edje_watch.c',
-        dependencies: [edje, eet, ecore, eio, ecore_evas],
+        dependencies: [edje_bin_deps, eet, ecore, eio, ecore_evas],
         install: true,
         c_args : package_c_args,
 )

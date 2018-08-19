@@ -1,3 +1,6 @@
+eo_deps = []
+eo_pub_deps = [eina]
+
 pub_eo_files = [
   'efl_object.eo',
   'efl_class.eo',
@@ -52,7 +55,7 @@ eo = declare_dependency(
   include_directories: [include_directories('.')],
   link_with: eo_lib,
   sources : pub_eo_file_target + priv_eo_file_target,
-  dependencies: [eina],
+  dependencies: eo_deps + eo_pub_deps,
 )
 
 install_data(pub_eo_files,
