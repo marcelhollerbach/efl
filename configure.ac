@@ -2570,7 +2570,7 @@ esac
 
 ARG_ENABLE_EVAS_VG_LOADER(SVG, static)
 ARG_ENABLE_EVAS_VG_LOADER(EET, static)
-
+ARG_ENABLE_EVAS_VG_LOADER(JSON, static)
 
 ARG_ENABLE_EVAS_IMAGE_LOADER(BMP, static)
 ARG_ENABLE_EVAS_IMAGE_LOADER(Eet, static)
@@ -2861,6 +2861,7 @@ AM_CONDITIONAL([BUILD_ENGINE_WAYLAND_COMMON], [test "x${have_evas_engine_wayland
 
 EVAS_CHECK_VG_LOADER([SVG], [${want_evas_vg_loader_svg}])
 EVAS_CHECK_VG_LOADER([EET], [${want_evas_vg_loader_eet}])
+EVAS_CHECK_VG_LOADER([JSON], [${want_evas_vg_loader_json}])
 
 ## Image Loaders
 
@@ -3090,9 +3091,9 @@ AC_ARG_ENABLE([xcf],
    ])
 
 have_poppler="no"
-have_spectre="no"
 have_raw="no"
 have_rsvg="no"
+have_spectre="no"
 
 ### Check needed dependency for each generic loader
 if test "x${want_poppler}" = "xyes"; then
@@ -3129,6 +3130,7 @@ EFL_ADD_FEATURE([EVAS_LOADER], [spectre], [${have_spectre}])
 EFL_ADD_FEATURE([EVAS_LOADER], [raw], [${have_raw}])
 EFL_ADD_FEATURE([EVAS_LOADER], [rsvg], [${have_rsvg}])
 EFL_ADD_FEATURE([EVAS_LOADER], [xcf], [${want_xcf}])
+
 
 EFL_LIB_END([Evas])
 #### End of Evas

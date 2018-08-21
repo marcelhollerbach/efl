@@ -28,7 +28,7 @@ static const struct ext_loader_s loaders[] =
 
 static const char *loaders_name[] =
 { /* in order of most likely needed */
-  "eet", "svg"
+  "eet", "json", "svg"
 };
 
 static Evas_Module *
@@ -63,10 +63,11 @@ _vg_load_from_file(const char *file, const char *key)
    int                error = EVAS_LOAD_ERROR_GENERIC;
    Vg_File_Data          *evg_data = NULL;
    unsigned int i;
-
+ERR("file = %s", file);
    em = _find_loader_module(file);
    if (em)
      {
+		  ERR("oh, em %p", em);
         loader = em->functions;
         evg_data = loader->file_data(file, key, &error);
      }
@@ -75,6 +76,7 @@ _vg_load_from_file(const char *file, const char *key)
         for (i = 0; i < sizeof (loaders_name) / sizeof (char *); i++)
           {
              em = evas_module_find_type(EVAS_MODULE_TYPE_VG_LOADER, loaders_name[i]);
+				 ERR("found? = %p", em);
              if (em)
                {
                   loader = em->functions;
