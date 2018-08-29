@@ -108,6 +108,9 @@ _update_vgtree_viewport(Eo *obj, Efl_Canvas_Vg_Object_Data *pd)
      }
 
    efl_canvas_vg_node_transformation_set(pd->root, &m);
+
+   pd->changed = EINA_TRUE;
+   evas_object_change(obj, efl_data_scope_get(obj, EFL_CANVAS_OBJECT_CLASS));
 }
 
 static void
@@ -132,12 +135,11 @@ evas_object_vg_add(Evas *e)
 EOLIAN static Efl_VG *
 _efl_canvas_vg_object_root_node_get(const Eo *obj EINA_UNUSED, Efl_Canvas_Vg_Object_Data *pd)
 {
-   Efl_VG *root = NULL;
+   Efl_VG *root;
 
-   if (pd->vg_entry)
-     root = evas_cache_vg_tree_get(pd->vg_entry);
-   else if (pd->user_entry)
-     root = pd->user_entry->root;
+   if (pd->vg_entry) root = evas_cache_vg_tree_get(pd->vg_entry);
+   else if (pd->user_entry) root = pd->user_entry->root;
+   else root = NULL;
 
    return root;
 }
@@ -163,7 +165,7 @@ _efl_canvas_vg_object_root_node_set(Eo *obj, Efl_Canvas_Vg_Object_Data *pd, Efl_
    if (root_node)
      {
         if (!pd->user_entry)
-          pd->user_entry = malloc(sizeof(User_Vg_Entry));
+          pd->user_entry = malloc(sizeof(Vg_User_Entry));
 
         pd->user_entry->w = pd->user_entry->h = 0;
         pd->user_entry->root = root_node;
@@ -185,7 +187,6 @@ _efl_canvas_vg_object_root_node_set(Eo *obj, Efl_Canvas_Vg_Object_Data *pd, Efl_
 
    // force a redraw
    pd->changed = EINA_TRUE;
-
    evas_object_change(obj, efl_data_scope_get(obj, EFL_CANVAS_OBJECT_CLASS));
 }
 
@@ -201,6 +202,7 @@ _efl_canvas_vg_object_fill_mode_get(const Eo *obj EINA_UNUSED, Efl_Canvas_Vg_Obj
    return pd->fill_mode;
 }
 
+//FIXME: logic is insane.... remove viewbox API.
 EOLIAN static void
 _efl_canvas_vg_object_viewbox_set(Eo *obj, Efl_Canvas_Vg_Object_Data *pd, Eina_Rect viewbox)
 {
@@ -215,7 +217,7 @@ _efl_canvas_vg_object_viewbox_set(Eo *obj, Efl_Canvas_Vg_Object_Data *pd, Eina_R
              pd->viewbox = EINA_RECT_EMPTY();
              eina_matrix3_identity(&m);
              efl_canvas_vg_node_transformation_set(pd->root, &m);
-             // un register the resize callback
+             // unregister the resize callback
              efl_event_callback_del(obj, EFL_GFX_ENTITY_EVENT_RESIZE, _evas_vg_resize, pd);
           }
         return;
@@ -254,21 +256,19 @@ _efl_canvas_vg_object_viewbox_align_get(const Eo *obj EINA_UNUSED, Efl_Canvas_Vg
    if (align_y) *align_y = pd->align_y;
 }
 
-// file set and save api implementation
-
 EOLIAN static Eina_Bool
-_efl_canvas_vg_object_efl_file_file_set(Eo *obj, Efl_Canvas_Vg_Object_Data *pd, const char *file, const char *key)
+_efl_canvas_vg_object_efl_file_file_set(Eo *eo_obj, Efl_Canvas_Vg_Object_Data *pd, const char *file, const char *key)
 {
-   Evas_Cache_Vg_Entry *old_entry;
-   int w, h;
+   Vg_Cache_Entry *old_entry;
+   Evas_Object_Protected_Data *obj;
 
    if (!file) return EINA_FALSE;
 
+   obj = efl_data_scope_get(eo_obj, EFL_CANVAS_OBJECT_CLASS);
    old_entry = pd->vg_entry;
-   evas_object_geometry_get(obj, NULL, NULL, &w, &h);
-   pd->vg_entry = evas_cache_vg_entry_find(file, key, w, h);
-   if (pd->vg_entry != old_entry)
-     evas_object_change(obj, efl_data_scope_get(obj, EFL_CANVAS_OBJECT_CLASS));
+   pd->vg_entry = evas_cache_vg_entry_create(file, key, obj->cur->geometry.w, obj->cur->geometry.h);
+//   if (pd->vg_entry != old_entry) evas_object_change(eo_obj, obj);
+   evas_object_change(eo_obj, obj);
    evas_cache_vg_entry_del(old_entry);
 
    return EINA_TRUE;
@@ -277,6 +277,9 @@ _efl_canvas_vg_object_efl_file_file_set(Eo *obj, Efl_Canvas_Vg_Object_Data *pd, 
 EOLIAN static void
 _efl_canvas_vg_object_efl_file_file_get(const Eo *obj EINA_UNUSED, Efl_Canvas_Vg_Object_Data *pd, const char **file, const char **key)
 {
+   *file = NULL;
+   *key = NULL;
+
    if (pd->vg_entry)
      {
         if (file) *file = pd->vg_entry->file;
@@ -292,7 +295,8 @@ _efl_canvas_vg_object_efl_file_save(const Eo *obj, Efl_Canvas_Vg_Object_Data *pd
 
    if (pd->vg_entry && pd->vg_entry->file)
      {
-        info = evas_cache_vg_file_info(pd->vg_entry->file, pd->vg_entry->key);
+        //TODO: Necessary file open?
+        info = evas_cache_vg_file_open(pd->vg_entry->file, pd->vg_entry->key);
      }
    else
      {
@@ -326,9 +330,10 @@ _efl_canvas_vg_object_efl_object_destructor(Eo *eo_obj, Efl_Canvas_Vg_Object_Dat
    efl_unref(pd->root);
    pd->root = NULL;
 
-   if (pd->user_entry)
-     free(pd->user_entry);
+   if (pd->user_entry) free(pd->user_entry);
    pd->user_entry = NULL;
+
+   evas_cache_vg_entry_del(pd->vg_entry);
 
    efl_destructor(efl_super(eo_obj, MY_CLASS));
 }
@@ -483,7 +488,7 @@ _cache_vg_entry_render(Evas_Object_Protected_Data *obj,
                        void *engine, void *output, void *context, void *surface,
                        int x, int y, int w, int h, Eina_Bool do_async)
 {
-   Evas_Cache_Vg_Entry *vg_entry = vd->vg_entry;
+   Vg_Cache_Entry *vg_entry = vd->vg_entry;
    Efl_VG *root, *dupe_root;
    void *buffer;
 
@@ -491,9 +496,8 @@ _cache_vg_entry_render(Evas_Object_Protected_Data *obj,
    if ((vg_entry->w != w) ||
        (vg_entry->h != h))
      {
-         evas_cache_vg_entry_del(vg_entry);
-         vg_entry = evas_cache_vg_entry_find(vg_entry->file, vg_entry->key,
-                                             w, h);
+         vg_entry = evas_cache_vg_entry_create(vg_entry->file, vg_entry->key, w, h);
+         evas_cache_vg_entry_del(vd->vg_entry);
          vd->vg_entry = vg_entry;
      }
    root = evas_cache_vg_tree_get(vg_entry);
@@ -532,7 +536,7 @@ _user_vg_entry_render(Evas_Object_Protected_Data *obj,
                       void *engine, void *output, void *context, void *surface,
                       int x, int y, int w, int h, Eina_Bool do_async)
 {
-   User_Vg_Entry *user_entry = vd->user_entry;
+   Vg_User_Entry *user_entry = vd->user_entry;
    void *buffer;
 
    // if the size dosen't match
@@ -588,12 +592,8 @@ _efl_canvas_vg_render(Evas_Object *eo_obj EINA_UNUSED,
    Efl_Canvas_Vg_Object_Data *vd = type_private_data;
 
    /* render object to surface with context, and offxet by x,y */
-   obj->layer->evas->engine.func->context_color_set(engine,
-                                                    context,
-                                                    255,
-                                                    255,
-                                                    255,
-                                                    255);
+   obj->layer->evas->engine.func->context_color_set(engine, context,
+                                                    255, 255, 255, 255);
    obj->layer->evas->engine.func->context_multiplier_set(engine,
                                                          context,
                                                          obj->cur->cache.clip.r,

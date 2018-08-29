@@ -44,7 +44,9 @@ evas_vg_load_file_data_eet(const char *file, const char *key, int *error EINA_UN
 
 static Evas_Vg_Load_Func evas_vg_load_eet_func =
 {
-   evas_vg_load_file_data_eet
+   evas_vg_load_file_data_eet,
+   NULL,
+   NULL
 };
 
 static int

@@ -1532,17 +1532,23 @@ struct _Vg_File_Data
 {
    Eina_Rectangle  view_box;
    Efl_VG         *root;
-   Eina_Bool       preserve_aspect;
+   void           *loader_data;           //loader specific local data
+   Evas_Vg_Load_Func *loader;
+   int ref;
+
+   Eina_Bool       preserve_aspect : 1;
 };
 
 struct _Evas_Vg_Load_Func
 {
-   Vg_File_Data *(*file_data) (const char *file, const char *key, int *error);
+   Vg_File_Data *(*file_open) (const char *file, const char *key, int *error);
+   Eina_Bool (*file_close) (Vg_File_Data *vfd);
+   Eina_Bool (*file_data) (Vg_File_Data *vfd);
 };
 
 struct _Evas_Vg_Save_Func
 {
-   int (*vg_save) (Vg_File_Data *vg, const char *file, const char *key, int compress);
+   int (*file_save) (Vg_File_Data *vfd, const char *file, const char *key, int compress);
 };
 
 #ifdef __cplusplus
