@@ -105,7 +105,7 @@ Vg_Cache_Entry*  evas_cache_vg_entry_create(const char *file, const char *key, i
 Efl_VG*                     evas_cache_vg_tree_get(Vg_Cache_Entry *vg_entry);
 void                        evas_cache_vg_entry_del(Vg_Cache_Entry *vg_entry);
 Vg_File_Data *              evas_cache_vg_file_open(const char *file, const char *key);
-Eina_Bool                   evas_vg_save_to_file(Vg_File_Data *vfd, const char *file, const char *key, const char *flags);
+Eina_Bool                   evas_cache_vg_file_save(Vg_File_Data *vfd, const char *file, const char *key, const char *flags);
 
 void                        efl_canvas_vg_node_root_set(Efl_VG *node, Efl_VG *vg_obj);
 

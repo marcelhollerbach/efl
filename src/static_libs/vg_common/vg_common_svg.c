@@ -7,8 +7,6 @@
 #include <Eet.h>
 #include <Evas.h>
 
-
-
 Eet_Data_Descriptor *_eet_rect_node = NULL;
 Eet_Data_Descriptor *_eet_circle_node = NULL;
 Eet_Data_Descriptor *_eet_ellipse_node = NULL;
@@ -818,7 +816,7 @@ vg_common_create_vg_node_helper(Svg_Node *node, Efl_VG *parent, Vg_File_Data *vg
 }
 
 Vg_File_Data *
-vg_common_create_vg_node(Svg_Node *node)
+vg_common_svg_create_vg_node(Svg_Node *node)
 {
    Vg_File_Data *vg_data;
 

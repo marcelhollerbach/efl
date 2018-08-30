@@ -1530,13 +1530,19 @@ struct _Evas_Image_Save_Func
 
 struct _Vg_File_Data
 {
-   Eina_Rectangle  view_box;
    Efl_VG         *root;
-   void           *loader_data;           //loader specific local data
    Evas_Vg_Load_Func *loader;
    int ref;
 
+   //Used in JSON
+   void           *loader_data;           //loader specific local data
+   float           keyframe;
+   //
+
+   //Used in SVG
+   Eina_Rectangle  view_box;
    Eina_Bool       preserve_aspect : 1;
+   //
 };
 
 struct _Evas_Vg_Load_Func

@@ -306,7 +306,7 @@ _efl_canvas_vg_object_efl_file_save(const Eo *obj, Efl_Canvas_Vg_Object_Data *pd
         info->root = pd->root;
         info->preserve_aspect = EINA_FALSE;
      }
-   return evas_vg_save_to_file(info, file, key, flags);
+   return evas_cache_vg_file_save(info, file, key, flags);
 }
 
 static void
@@ -423,11 +423,9 @@ _render_to_buffer(Evas_Object_Protected_Data *obj, Efl_Canvas_Vg_Object_Data *vd
         buffer = obj->layer->evas->engine.func->ector_surface_create(engine,
                                                                      w, h,
                                                                      &error);
-        if (error)
-          return NULL; // surface creation error
+        if (error) return NULL; // surface creation error
         buffer_created = EINA_TRUE;
      }
-
 
    //1. render pre
    _evas_vg_render_pre(root, ector, NULL);
@@ -519,9 +517,7 @@ _cache_vg_entry_render(Evas_Object_Protected_Data *obj,
         efl_unref(dupe_root);
      }
    else
-     {
-        obj->layer->evas->engine.func->ector_surface_cache_drop(engine, root);
-     }
+     obj->layer->evas->engine.func->ector_surface_cache_drop(engine, root);
 
    _render_buffer_to_screen(obj,
                             engine, output, context, surface,
