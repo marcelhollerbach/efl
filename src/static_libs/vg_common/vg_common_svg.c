@@ -1008,7 +1008,7 @@ vg_common_create_svg_node_helper(Efl_VG *vg, Svg_Node *parent)
 }
 
 Svg_Node *
-vg_common_create_svg_node(Vg_File_Data *node)
+vg_common_svg_create_svg_node(Vg_File_Data *node)
 {
    Svg_Node *doc;
 
