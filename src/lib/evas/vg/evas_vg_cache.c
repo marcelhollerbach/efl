@@ -283,15 +283,16 @@ evas_cache_vg_tree_get(Vg_Cache_Entry *vg_entry, int frame_num)
    Vg_File_Data *vfd = vg_entry->vfd;
    if (!vfd) return NULL;
 
-   if (vg_entry->root && (frame_num == vfd->anim.frame_num))
+   if (vg_entry->root && ((unsigned int)frame_num == vfd->anim.frame_num))
      return vg_entry->root;
 
-   //FIXME: How to pass view size to loader?
-   vfd->view_box.w = vg_entry->w;
-   vfd->view_box.h = vg_entry->h;
+   if (vfd->view_box.w == 0) vfd->view_box.w = vg_entry->w;
+   if (vfd->view_box.h == 0) vfd->view_box.h = vg_entry->h;
+
    vfd->anim.frame_num = frame_num;
 
    if (!vfd->loader->file_data(vfd)) return NULL;
+
    vg_entry->root = efl_duplicate(vfd->root);
    _apply_transformation(vg_entry->root, vg_entry->w, vg_entry->h, vfd);
 
