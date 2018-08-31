@@ -12,27 +12,27 @@ vg_common_json_create_vg_node(Vg_File_Data *vfd)
    LOTPlayer *player = (LOTPlayer *) vfd->loader_data;
    if (!player) return EINA_FALSE;
 
-   if (vfd->keyframe < 0) vfd->keyframe = 0;
-   else if (vfd->keyframe > 1) vfd->keyframe = 1;
-
-   lotplayer_set_size(player, vfd->view_box.w, vfd->view_box.h);
-   int size = lotplayer_get_node_count(player, vfd->keyframe);
-
-   //Init root node
-   if (!vfd->root) vfd->root = efl_add_ref(EFL_CANVAS_VG_CONTAINER_CLASS, NULL);
+   //Root node
+   if (vfd->root) efl_unref(vfd->root);
+   vfd->root = efl_add_ref(EFL_CANVAS_VG_CONTAINER_CLASS, NULL);
    Efl_VG *root = vfd->root;
    if (!root) return EINA_FALSE;
 
-   ERR("data json vfd = %p, player = %p, size = %d, root(%p) viewbox(%d %d %d %d)", vfd, player, size, root, vfd->view_box.x, vfd->view_box.y, vfd->view_box.w, vfd->view_box.h);
+   lotplayer_set_size(player, vfd->view_box.w, vfd->view_box.h);
+
+   float progress = ((float) vfd->anim.frame_num / (float) vfd->anim.frame_cnt);
+   int size = lotplayer_get_node_count(player, progress);
+
+   ERR("data json vfd = %p, player = %p, size = %d, root(%p) viewbox(%d %d %d %d) progress(%f)", vfd, player, size, root, vfd->view_box.x, vfd->view_box.y, vfd->view_box.w, vfd->view_box.h, progress);
 
    //Construct vg tree
    for (int i = 0; i < size; i++)
      {
-        const LOTNode *p = lotplayer_get_node(player, vfd->keyframe, i);
+        const LOTNode *p = lotplayer_get_node(player, progress, i);
         if (!p) continue;
 
 #ifdef PRINT_LOTTIE_INFO
-        ERR("%f[%d] node(%p)", progress, xx++, p);
+        ERR("%f[%d] node(%p)", progress, i, p);
         ERR("\t Flag - None(%d), Path(%d), Paint(%d), All(%d)", p->mFlag&ChangeFlagNone, p->mFlag&ChangeFlagPath, p->mFlag&ChangeFlagPaint, p->mFlag&ChangeFlagAll);
         ERR("\t BrushType - mType(%d)", p->mType);
         ERR("\t FillRule - mFillRule(%d)", p->mFillRule);

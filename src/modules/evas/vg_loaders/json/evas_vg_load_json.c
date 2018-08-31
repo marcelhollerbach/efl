@@ -31,8 +31,6 @@ evas_vg_load_file_close_json(Vg_File_Data *vfd)
 static Eina_Bool
 evas_vg_load_file_data_json(Vg_File_Data *vfd)
 {
-   ERR("data json vfd = %p", vfd);
-
    return vg_common_json_create_vg_node(vfd);
 }
 
@@ -62,6 +60,8 @@ evas_vg_load_file_open_json(const char *file,
      }
 
    vfd->loader_data = (void *) player;
+   vfd->anim.duration = lotplayer_get_playtime(player);
+   vfd->anim.frame_cnt = lotplayer_get_totalframe(player);
 
    ERR("open json vfd(%p) lotplayer! = %p, file = %s", vfd, player, file);
 

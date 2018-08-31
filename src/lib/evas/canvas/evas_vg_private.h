@@ -48,7 +48,10 @@ struct _Efl_Canvas_Vg_Object_Data
    Eina_Array                 cleanup;
    double                     align_x, align_y;
    Efl_Canvas_Vg_Fill_Mode    fill_mode;
-   Eina_Bool                  changed;
+   int                        frame_index;
+
+
+   Eina_Bool                  changed : 1;
 };
 
 struct _Efl_Canvas_Vg_Node_Data
@@ -102,7 +105,7 @@ struct _Efl_Canvas_Vg_Interpolation
 void                        evas_cache_vg_init(void);
 void                        evas_cache_vg_shutdown(void);
 Vg_Cache_Entry*  evas_cache_vg_entry_create(const char *file, const char *key, int w, int h);
-Efl_VG*                     evas_cache_vg_tree_get(Vg_Cache_Entry *vg_entry);
+Efl_VG*                     evas_cache_vg_tree_get(Vg_Cache_Entry *vg_entry, int frame_num);
 void                        evas_cache_vg_entry_del(Vg_Cache_Entry *vg_entry);
 Vg_File_Data *              evas_cache_vg_file_open(const char *file, const char *key);
 Eina_Bool                   evas_cache_vg_file_save(Vg_File_Data *vfd, const char *file, const char *key, const char *flags);
