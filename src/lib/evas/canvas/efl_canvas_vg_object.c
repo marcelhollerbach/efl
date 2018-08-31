@@ -485,7 +485,7 @@ _cache_vg_entry_render(Evas_Object_Protected_Data *obj,
                        int x, int y, int w, int h, Eina_Bool do_async)
 {
    Vg_Cache_Entry *vg_entry = pd->vg_entry;
-   Efl_VG *root, *dupe_root;
+   Efl_VG *root;
    void *buffer;
 
    // if the size changed in between path set and the draw call;
@@ -503,18 +503,14 @@ _cache_vg_entry_render(Evas_Object_Protected_Data *obj,
    // if the buffer is not created yet
    if (!buffer)
      {
-        //FIXME: Duplication Again??
-        dupe_root = efl_duplicate(root);
-
         // render to the buffer
         buffer = _render_to_buffer(obj, pd,
                                    engine, surface,
-                                   dupe_root,
+                                   root,
                                    w, h,
                                    root,
                                    buffer,
                                    do_async);
-        efl_unref(dupe_root);
      }
    else
      obj->layer->evas->engine.func->ector_surface_cache_drop(engine, root);
