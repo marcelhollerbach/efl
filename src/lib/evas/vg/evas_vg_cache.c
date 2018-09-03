@@ -282,8 +282,22 @@ evas_cache_vg_entry_create(const char *file,
    return vg_entry;
 }
 
+double
+evas_cache_vg_anim_duration_get(const Vg_Cache_Entry* vg_entry)
+{
+   if (!vg_entry->vfd->anim_data) return 0;
+   return vg_entry->vfd->anim_data->duration;
+}
+
+unsigned int
+evas_cache_vg_anim_frame_count_get(const Vg_Cache_Entry* vg_entry)
+{
+   if (!vg_entry->vfd->anim_data) return 0;
+   return vg_entry->vfd->anim_data->frame_cnt;
+}
+
 Efl_VG*
-evas_cache_vg_tree_get(Vg_Cache_Entry *vg_entry, int frame_num)
+evas_cache_vg_tree_get(Vg_Cache_Entry *vg_entry, unsigned int frame_num)
 {
    if (!vg_entry) return NULL;
    if ((vg_entry->w < 1) || (vg_entry->h < 1)) return NULL;
@@ -291,13 +305,25 @@ evas_cache_vg_tree_get(Vg_Cache_Entry *vg_entry, int frame_num)
    Vg_File_Data *vfd = vg_entry->vfd;
    if (!vfd) return NULL;
 
-   if (vg_entry->root && ((unsigned int)frame_num == vfd->anim.frame_num))
-     return vg_entry->root;
+   //Hit Caching?
+   if (vg_entry->root)
+     {
+        if (!vfd->anim_data || (frame_num == vfd->anim_data->frame_num))
+          {
+             if (vfd->static_viewbox ||
+                 ((vfd->view_box.w == vg_entry->w) &&
+                  (vfd->view_box.h == vg_entry->h)))
+                 return vg_entry->root;
+          }
+     }
 
-   if (vfd->view_box.w == 0) vfd->view_box.w = vg_entry->w;
-   if (vfd->view_box.h == 0) vfd->view_box.h = vg_entry->h;
+   if (!vfd->static_viewbox)
+     {
+        vfd->view_box.w = vg_entry->w;
+        vfd->view_box.h = vg_entry->h;
+     }
 
-   vfd->anim.frame_num = frame_num;
+   if (vfd->anim_data) vfd->anim_data->frame_num = frame_num;
 
    if (!vfd->loader->file_data(vfd)) return NULL;
 

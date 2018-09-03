@@ -105,10 +105,12 @@ struct _Efl_Canvas_Vg_Interpolation
 void                        evas_cache_vg_init(void);
 void                        evas_cache_vg_shutdown(void);
 Vg_Cache_Entry*  evas_cache_vg_entry_create(const char *file, const char *key, int w, int h);
-Efl_VG*                     evas_cache_vg_tree_get(Vg_Cache_Entry *vg_entry, int frame_num);
+Efl_VG*                     evas_cache_vg_tree_get(Vg_Cache_Entry *vg_entry, unsigned int frame_num);
 void                        evas_cache_vg_entry_del(Vg_Cache_Entry *vg_entry);
 Vg_File_Data *              evas_cache_vg_file_open(const char *file, const char *key);
 Eina_Bool                   evas_cache_vg_file_save(Vg_File_Data *vfd, const char *file, const char *key, const char *flags);
+double                      evas_cache_vg_anim_duration_get(const Vg_Cache_Entry *vg_entry);
+unsigned int                evas_cache_vg_anim_frame_count_get(const Vg_Cache_Entry *vg_entry);
 
 void                        efl_canvas_vg_node_root_set(Efl_VG *node, Efl_VG *vg_obj);
 

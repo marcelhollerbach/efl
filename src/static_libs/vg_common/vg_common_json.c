@@ -20,10 +20,10 @@ vg_common_json_create_vg_node(Vg_File_Data *vfd)
 
    lotplayer_set_size(player, vfd->view_box.w, vfd->view_box.h);
 
-   float progress = ((float) vfd->anim.frame_num / (float) vfd->anim.frame_cnt);
+   float progress = ((float) vfd->anim_data->frame_num / (float) vfd->anim_data->frame_cnt);
    int size = lotplayer_get_node_count(player, progress);
 
-   ERR("data json vfd = %p, player = %p, size = %d, root(%p) viewbox(%d %d %d %d) progress(%f)", vfd, player, size, root, vfd->view_box.x, vfd->view_box.y, vfd->view_box.w, vfd->view_box.h, progress);
+   //ERR("data json vfd = %p, player = %p, size = %d, root(%p) viewbox(%d %d %d %d) progress(%f)", vfd, player, size, root, vfd->view_box.x, vfd->view_box.y, vfd->view_box.w, vfd->view_box.h, progress);
 
    //Construct vg tree
    for (int i = 0; i < size; i++)

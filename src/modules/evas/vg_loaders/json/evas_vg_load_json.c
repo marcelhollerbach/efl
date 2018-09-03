@@ -19,10 +19,8 @@ evas_vg_load_file_close_json(Vg_File_Data *vfd)
    if (!vfd) return EINA_FALSE;
 
    LOTPlayer *player = (LOTPlayer *) vfd->loader_data;
-
-   ERR("close json vfd = %p, lotplayer! = %p", vfd, player);
-
    lotplayer_destroy(player);
+   if (vfd->anim_data) free(vfd->anim_data);
    free(vfd);
 
    return EINA_TRUE;
@@ -46,26 +44,40 @@ evas_vg_load_file_open_json(const char *file,
    if (!player)
      {
         ERR("Failed to create LOTPlayer");
-        free(vfd);
-        return NULL;
+        goto err;
      }
 
    int ret = lotplayer_set_file(player, file);
    if (LOT_PLAYER_ERROR_NONE != ret)
      {
         ERR("Failed to lotplayer_set_file(), result = %d", ret);
-        free(vfd);
-        lotplayer_destroy(player);
-        return NULL;
+        goto err;
+     }
+
+   unsigned int frame_cnt = lotplayer_get_totalframe(player);
+
+   //Support animation
+   if (frame_cnt > 1)
+     {
+        vfd->anim_data = calloc(1, sizeof(Vg_File_Anim_Data));
+        if (!vfd->anim_data) goto err;
+        vfd->anim_data->duration = lotplayer_get_playtime(player);
+        vfd->anim_data->frame_cnt = frame_cnt;
      }
 
    vfd->loader_data = (void *) player;
-   vfd->anim.duration = lotplayer_get_playtime(player);
-   vfd->anim.frame_cnt = lotplayer_get_totalframe(player);
-
-   ERR("open json vfd(%p) lotplayer! = %p, file = %s", vfd, player, file);
 
    return vfd;
+
+err:
+   if (vfd)
+     {
+        if (vfd->anim_data) free(vfd->anim_data);
+        free(vfd);
+     }
+   if (player) lotplayer_destroy(player);
+
+   return NULL;
 }
 
 static Evas_Vg_Load_Func evas_vg_load_json_func =

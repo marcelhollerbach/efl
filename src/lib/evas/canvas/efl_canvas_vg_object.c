@@ -827,7 +827,7 @@ _efl_canvas_vg_object_efl_gfx_image_animation_controller_animated_frame_duration
                                                                                      int frame_num EINA_UNUSED)
 {
    if (!pd->vg_entry) return 0;
-   return pd->vg_entry->vfd->anim.duration;
+   return evas_cache_vg_anim_duration_get(pd->vg_entry);
 }
 
 EOLIAN static Eina_Bool
@@ -851,7 +851,7 @@ _efl_canvas_vg_object_efl_gfx_image_animation_controller_animated_frame_get(cons
                                                                             Efl_Canvas_Vg_Object_Data *pd EINA_UNUSED)
 {
    if (!pd->vg_entry) return 0;
-   return pd->vg_entry->vfd->anim.frame_cnt;
+   return evas_cache_vg_anim_frame_count_get(pd->vg_entry);
 }
 
 #include "efl_canvas_vg_object.eo.c"

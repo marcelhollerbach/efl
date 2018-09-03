@@ -42,13 +42,13 @@ evas_vg_load_file_open_eet(const char *file, const char *key, int *error EINA_UN
 }
 
 static Eina_Bool
-evas_vg_load_file_close_eet(Vg_File_Data *vfd)
+evas_vg_load_file_close_eet(Vg_File_Data *vfd EINA_UNUSED)
 {
    return EINA_TRUE;
 }
 
 static Eina_Bool
-evas_vg_load_file_data_eet(Vg_File_Data *vfd)
+evas_vg_load_file_data_eet(Vg_File_Data *vfd EINA_UNUSED)
 {
    return EINA_TRUE;
 }
