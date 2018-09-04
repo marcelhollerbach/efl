@@ -206,6 +206,10 @@ EXTRA_PROGRAMS += evas/evas_vg_batman
 evas_evas_vg_batman_SOURCES = evas/evas-vg-batman.c
 evas_evas_vg_batman_CPPFLAGS = $(ECORE_EVAS_COMMON_CPPFLAGS)
 
+EXTRA_PROGRAMS += evas/evas_vg_json
+evas_evas_vg_json_SOURCES = evas/evas-vg-json.c
+evas_evas_vg_json_CPPFLAGS = $(ECORE_EVAS_COMMON_CPPFLAGS)
+
 EXTRA_PROGRAMS += evas/evas_aspect_hints
 evas_evas_aspect_hints_DEPS = $(srcdir)/aspect.edc
 evas_evas_aspect_hints_SOURCES = evas/evas-aspect-hints.c
@@ -302,7 +306,8 @@ evas/evas-table.c \
 evas/evas-multi-touch.c \
 evas/evas-text.c \
 evas/evas-vg-simple.c \
-evas/evas-vg-batman.c
+evas/evas-vg-batman.c \
+evas/evas-vg-json.c
 
 EVAS_DATA_FILES = \
 evas/resources/images/enlightenment.png \
@@ -348,6 +353,10 @@ evas/resources/models/convex_hull/plain.ply \
 evas/resources/models/convex_hull/plain_blender_ch.ply \
 evas/resources/models/convex_hull/sphere_blender_ch.ply \
 evas/resources/models/convex_hull/torus_blender_ch.ply \
+evas/resources/vg/browser.json \
+evas/resources/vg/emoji_wink.json \
+evas/resources/vg/jolly_walker.json \
+evas/resources/vg/windmill.json \
 evas/shooter/assets/images/brick-stone_n.jpg \
 evas/shooter/assets/images/brick-stone.jpg \
 evas/shooter/assets/images/bricks_n.jpg \
