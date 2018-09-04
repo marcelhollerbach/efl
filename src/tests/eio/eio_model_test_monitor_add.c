@@ -13,7 +13,7 @@
 #include "eio_suite.h"
 
 Eina_Tmpstr* temp_filename = NULL;
-const char* tmpdir = NULL;
+Eina_Tmpstr *directory = NULL;
 Eina_Bool children_deleted = EINA_FALSE;
 
 static void
@@ -31,6 +31,8 @@ _children_removed_cb(void *data EINA_UNUSED, const Efl_Event* event)
 
    if (temp_filename && strcmp(str, temp_filename) == 0)
      ecore_main_loop_quit();
+
+   fprintf(stderr, "QUIT\n");
 
    free(str);
    eina_value_free(path);
@@ -56,6 +58,8 @@ _children_get(void *data,
         fail_if(path == NULL);
         str = eina_value_to_string(path);
         fail_if(str == NULL);
+
+        fprintf(stderr, "ADDED %s\n", temp_filename);
 
         if (strcmp(temp_filename, str) == 0)
           {
@@ -84,14 +88,29 @@ _create_file(void *data EINA_UNUSED,
              const Eina_Value v,
              const Eina_Future *dead_future EINA_UNUSED)
 {
-   int fd;
+   FILE *f;
+   char buf[PATH_MAX];
+   char x[]="Hello-Efl";
 
-   if((fd = eina_file_mkstemp("prefixXXXXXX.ext", &temp_filename)) > 0)
-     {
-        close(fd);
-     }
+   snprintf(buf, sizeof(buf), "%s/test-file", directory);
+
+   f = fopen(buf, "a");
+   fwrite(x, sizeof(x[0]), sizeof(x)/sizeof(x[0]), f);
+   fclose(f);
+
+   temp_filename = eina_tmpstr_add(buf);
 
    return v;
+}
+
+static void
+_create_directory(void)
+{
+   int fd;
+   fd = eina_file_mkdtemp("prefixXXXXXX", &directory);
+
+   if (fd > 0)
+     close(fd);
 }
 
 EFL_START_TEST(eio_model_test_test_monitor_add)
@@ -99,11 +118,11 @@ EFL_START_TEST(eio_model_test_test_monitor_add)
    Eo *filemodel = NULL;
    Eina_Future* future;
 
-   tmpdir = eina_environment_tmp_get();
+   _create_directory();
 
    filemodel = efl_add(EIO_MODEL_CLASS,
                        efl_main_loop_get(),
-                       eio_model_path_set(efl_added, tmpdir));
+                       eio_model_path_set(efl_added, directory));
    fail_if(!filemodel, "ERROR: Cannot init model!\n");
 
    efl_event_callback_add(filemodel, EFL_MODEL_EVENT_CHILD_ADDED, &_children_added_cb, filemodel);
@@ -116,6 +135,8 @@ EFL_START_TEST(eio_model_test_test_monitor_add)
    ecore_main_loop_begin();
 
    efl_del(filemodel);
+
+   rmdir(directory);
 
    fail_if(!children_deleted);
 }
