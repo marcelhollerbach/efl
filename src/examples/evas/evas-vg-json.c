@@ -76,16 +76,15 @@ main(void)
    char buf[PATH_MAX];
 
    //1
-   Eo *vg = gvg[0] = efl_add(EFL_CANVAS_VG_OBJECT_CLASS, evas);
+   Eo *vg = gvg[0] = efl_add(EFL_CANVAS_VG_CLASS, evas);
 
    snprintf(buf, sizeof(buf), "%s/browser.json", PACKAGE_EXAMPLES_DIR EVAS_VG_FOLDER);
-	printf("%s\n", buf);
    efl_file_set(vg, buf, NULL);
    efl_gfx_entity_size_set(vg, EINA_SIZE2D(200, 200));
    efl_gfx_entity_visible_set(vg, EINA_TRUE);
 
    //2
-   Eo *vg2 = gvg[1] = efl_add(EFL_CANVAS_VG_OBJECT_CLASS, evas);
+   Eo *vg2 = gvg[1] = efl_add(EFL_CANVAS_VG_CLASS, evas);
    snprintf(buf, sizeof(buf), "%s/jolly_walker.json", PACKAGE_EXAMPLES_DIR EVAS_VG_FOLDER);
    efl_file_set(vg2, buf, NULL);
    efl_gfx_entity_position_set(vg2, EINA_POSITION2D(200, 200));
@@ -93,7 +92,7 @@ main(void)
    efl_gfx_entity_visible_set(vg2, EINA_TRUE);
 
    //3
-   Eo *vg3 = gvg[2] = efl_add(EFL_CANVAS_VG_OBJECT_CLASS, evas);
+   Eo *vg3 = gvg[2] = efl_add(EFL_CANVAS_VG_CLASS, evas);
    snprintf(buf, sizeof(buf), "%s/windmill.json", PACKAGE_EXAMPLES_DIR EVAS_VG_FOLDER);
    efl_file_set(vg3, buf, NULL);
    efl_gfx_entity_position_set(vg3, EINA_POSITION2D(0, 200));
@@ -101,7 +100,7 @@ main(void)
    efl_gfx_entity_visible_set(vg3, EINA_TRUE);
 
    //4
-   Eo* vg4 = gvg[3] = efl_add(EFL_CANVAS_VG_OBJECT_CLASS, evas);
+   Eo* vg4 = gvg[3] = efl_add(EFL_CANVAS_VG_CLASS, evas);
    snprintf(buf, sizeof(buf), "%s/emoji_wink.json", PACKAGE_EXAMPLES_DIR EVAS_VG_FOLDER);
    efl_file_set(vg4, buf, NULL);
    efl_gfx_entity_position_set(vg4, EINA_POSITION2D(200, 0));
