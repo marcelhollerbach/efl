@@ -9,8 +9,8 @@ Eina_Bool
 vg_common_json_create_vg_node(Vg_File_Data *vfd)
 {
 #ifdef BUILD_VG_LOADER_JSON
-   LOTPlayer *player = (LOTPlayer *) vfd->loader_data;
-   if (!player) return EINA_FALSE;
+   Lottie_Animation *lot_anim = (Lottie_Animation *) vfd->loader_data;
+   if (!lot_anim) return EINA_FALSE;
 
    //Root node
    if (vfd->root) efl_unref(vfd->root);
@@ -18,17 +18,15 @@ vg_common_json_create_vg_node(Vg_File_Data *vfd)
    Efl_VG *root = vfd->root;
    if (!root) return EINA_FALSE;
 
-   lotplayer_set_size(player, vfd->view_box.w, vfd->view_box.h);
+   lottie_animation_prepare_frame(lot_anim, vfd->anim_data->frame_num, vfd->view_box.w, vfd->view_box.h);
+   int size = lottie_animation_get_node_count(lot_anim);
 
-   float progress = ((float) vfd->anim_data->frame_num / (float) vfd->anim_data->frame_cnt);
-   int size = lotplayer_get_node_count(player, progress);
-
-   //ERR("data json vfd = %p, player = %p, size = %d, root(%p) viewbox(%d %d %d %d) progress(%f)", vfd, player, size, root, vfd->view_box.x, vfd->view_box.y, vfd->view_box.w, vfd->view_box.h, progress);
+   //ERR("data json vfd = %p, lot_anim = %p, size = %d, root(%p) viewbox(%d %d %d %d) progress(%f)", vfd, lot_anim, size, root, vfd->view_box.x, vfd->view_box.y, vfd->view_box.w, vfd->view_box.h, progress);
 
    //Construct vg tree
    for (int i = 0; i < size; i++)
      {
-        const LOTNode *p = lotplayer_get_node(player, progress, i);
+        const LOTNode *p = lottie_animation_get_node(lot_anim, i);
         if (!p) continue;
 
 #ifdef PRINT_LOTTIE_INFO

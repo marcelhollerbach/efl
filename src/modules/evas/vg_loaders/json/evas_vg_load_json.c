@@ -1,4 +1,4 @@
-#include <lotplayer_capi.h>
+#include <lottieanimation_capi.h>
 #include "vg_common.h"
 
 #ifdef ERR
@@ -18,8 +18,8 @@ evas_vg_load_file_close_json(Vg_File_Data *vfd)
 {
    if (!vfd) return EINA_FALSE;
 
-   LOTPlayer *player = (LOTPlayer *) vfd->loader_data;
-   lotplayer_destroy(player);
+   Lottie_Animation *lot_anim = (Lottie_Animation *) vfd->loader_data;
+   lottie_animation_destroy(lot_anim);
    if (vfd->anim_data) free(vfd->anim_data);
    free(vfd);
 
@@ -40,32 +40,25 @@ evas_vg_load_file_open_json(const char *file,
    Vg_File_Data *vfd = calloc(1, sizeof(Vg_File_Data));
    if (!vfd) return NULL;
 
-   LOTPlayer *player = lotplayer_create();
-   if (!player)
+   Lottie_Animation *lot_anim = lottie_animation_from_file(file);
+   if (!lot_anim)
      {
-        ERR("Failed to create LOTPlayer");
+        ERR("Failed lottie_animation_from_file");
         goto err;
      }
 
-   int ret = lotplayer_set_file(player, file);
-   if (LOT_PLAYER_ERROR_NONE != ret)
-     {
-        ERR("Failed to lotplayer_set_file(), result = %d", ret);
-        goto err;
-     }
-
-   unsigned int frame_cnt = lotplayer_get_totalframe(player);
+   unsigned int frame_cnt = lottie_animation_get_totalframe(lot_anim);
 
    //Support animation
    if (frame_cnt > 1)
      {
         vfd->anim_data = calloc(1, sizeof(Vg_File_Anim_Data));
         if (!vfd->anim_data) goto err;
-        vfd->anim_data->duration = lotplayer_get_playtime(player);
+        vfd->anim_data->duration = lottie_animation_get_duration(lot_anim);
         vfd->anim_data->frame_cnt = frame_cnt;
      }
 
-   vfd->loader_data = (void *) player;
+   vfd->loader_data = (void *) lot_anim;
 
    return vfd;
 
@@ -75,7 +68,7 @@ err:
         if (vfd->anim_data) free(vfd->anim_data);
         free(vfd);
      }
-   if (player) lotplayer_destroy(player);
+   if (lot_anim) lottie_animation_destroy(lot_anim);
 
    return NULL;
 }
@@ -126,6 +119,6 @@ static Evas_Module_Api evas_modapi =
 EVAS_MODULE_DEFINE(EVAS_MODULE_TYPE_VG_LOADER, vg_loader, json);
 
 #ifndef EVAS_STATIC_BUILD_VG_JSON
-EVAS_EINA_MODULE_DEFINE(vg_loader, json);
+EVAS_EINA_MODULE_DEFINE(vg_loader, json)
 #endif
 
