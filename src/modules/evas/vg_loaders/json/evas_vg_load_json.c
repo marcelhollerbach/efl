@@ -33,14 +33,28 @@ evas_vg_load_file_data_json(Vg_File_Data *vfd)
 }
 
 static Vg_File_Data*
-evas_vg_load_file_open_json(const char *file,
-                            const char *key EINA_UNUSED,
+evas_vg_load_file_open_json(Eina_File *file,
+                            const char *key,
+                            Eina_Bool mmap,
                             int *error EINA_UNUSED)
 {
    Vg_File_Data *vfd = calloc(1, sizeof(Vg_File_Data));
    if (!vfd) return NULL;
 
-   Lottie_Animation *lot_anim = lottie_animation_from_file(file);
+   Lottie_Animation *lot_anim = NULL;
+
+   if (mmap)
+     {
+        const char *data = (const char*) eina_file_map_all(file, EINA_FILE_SEQUENTIAL);
+        if (!data) goto err;
+        lot_anim = lottie_animation_from_data(data, key ? key:eina_file_filename_get(file));
+        eina_file_map_free(file, (void *) data);
+     }
+   else
+     {
+        lot_anim = lottie_animation_from_file(eina_file_filename_get(file));
+     }
+
    if (!lot_anim)
      {
         ERR("Failed lottie_animation_from_file");

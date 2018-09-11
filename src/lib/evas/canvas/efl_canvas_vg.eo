@@ -73,7 +73,7 @@ class Efl.Canvas.Vg (Efl.Canvas.Object, Efl.File, Efl.Gfx.Image_Animation_Contro
       Efl.Object.constructor;
       Efl.Object.finalize;
       Efl.Object.destructor;
-      // FIXME: Implement mmap only (also fix cache keys)
+      Efl.File.mmap { get; set; }
       Efl.File.file { get; set; }
       Efl.File.save;
       Efl.Gfx.Image_Animation_Controller.animated { get; }
