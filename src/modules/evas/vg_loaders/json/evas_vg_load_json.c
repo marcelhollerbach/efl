@@ -133,6 +133,6 @@ static Evas_Module_Api evas_modapi =
 EVAS_MODULE_DEFINE(EVAS_MODULE_TYPE_VG_LOADER, vg_loader, json);
 
 #ifndef EVAS_STATIC_BUILD_VG_JSON
-EVAS_EINA_MODULE_DEFINE(vg_loader, json)
+EVAS_EINA_MODULE_DEFINE(vg_loader, json);
 #endif
 
