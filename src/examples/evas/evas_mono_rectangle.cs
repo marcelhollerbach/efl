@@ -12,25 +12,29 @@ class TestMain
     {
         int color_index = 0;
 
-        efl.All.Init();
+        Efl.All.Init();
 
-        efl.Loop loop = new efl.Loop();
+        Efl.Loop loop = new Efl.Loop();
         EcoreEvas ecore_evas = new EcoreEvas();
-        efl.canvas.IObject canvas = ecore_evas.canvas;
+        Efl.Canvas.Object canvas = ecore_evas.canvas;
         canvas.SetVisible(true);
 
-        efl.IObject parent = canvas.GetParent();
+        Efl.Object parent = canvas.GetParent();
         System.Diagnostics.Debug.Assert(parent.raw_handle != IntPtr.Zero);
 
-        efl.canvas.Rectangle rect = new efl.canvas.Rectangle(canvas);
+        Efl.Canvas.Rectangle rect = new Efl.Canvas.Rectangle(canvas);
         rect.SetColor(colors[0, 0], colors[0, 1], colors[0, 2], 255);
-        eina.Size2D size = new eina.Size2D();
+        Eina.Size2D size = new Eina.Size2D();
         size.W = 640;
         size.H = 480;
         rect.SetSize(size);
         rect.SetVisible(true);
 
-        canvas.KeyDownEvt += (object sender, efl.input.Interface.KeyDownEvt_Args e) => {
+        // Event argument classes are still defined in the Concrete implementation of the interface.
+        // Maybe we could move them to the upper namespace with the name of the class as prefix
+        // e.g. Efl.Ui.InterfaceKeyDown_Args
+        // Also, interface events are currently declared at the interface level.
+        ((Efl.Input.Interface)canvas).KeyDownEvt += (object sender, Efl.Input.InterfaceConcrete.KeyDownEvt_Args e) => {
             color_index = (color_index + 1) % 3;
             Console.WriteLine("Key Down");
             Console.WriteLine("Got key obj at {0}", e.arg.raw_handle.ToString("X"));
@@ -42,6 +46,6 @@ class TestMain
 
         loop.Begin();
 
-        efl.All.Shutdown();
+        Efl.All.Shutdown();
     }
 }

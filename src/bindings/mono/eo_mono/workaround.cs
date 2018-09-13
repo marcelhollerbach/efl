@@ -51,29 +51,29 @@ public struct EolianPD
 }
 
 #pragma warning disable 0169
-public struct Evas_Object_Box_Layout
+public struct EvasObjectBoxLayout
 {
     IntPtr o;
     IntPtr priv;
     IntPtr user_data;
 };
 [StructLayout(LayoutKind.Sequential, CharSet=CharSet.Ansi)]
-public struct Evas_Object_Box_Data
+public struct EvasObjectBoxData
 {
 }
-public delegate void Eina_Free_Cb(IntPtr data);
-public struct Evas_Object_Box_Option {
+public delegate void EinaFreeCb(IntPtr data);
+public struct EvasObjectBoxOption {
     IntPtr obj;
     [MarshalAsAttribute(UnmanagedType.U1)] bool max_reached;
     [MarshalAsAttribute(UnmanagedType.U1)] bool min_reached;
-    evas.Coord alloc_size;
+    Evas.Coord alloc_size;
 };
 #pragma warning restore 0169
 
-namespace efl {
+namespace Efl {
 
 [StructLayout(LayoutKind.Sequential)]
-public struct Event_Description {
+public struct EventDescription {
     public IntPtr Name;
     [MarshalAs(UnmanagedType.U1)] public bool Unfreezable;
     [MarshalAs(UnmanagedType.U1)] public bool Legacy_is;
@@ -81,7 +81,7 @@ public struct Event_Description {
 
     private static Dictionary<string, IntPtr> descriptions = new Dictionary<string, IntPtr>();
 
-    public Event_Description(string name)
+    public EventDescription(string name)
     {
         this.Name = GetNative(name);
         this.Unfreezable = false;
@@ -93,10 +93,10 @@ public struct Event_Description {
     {
         if (!descriptions.ContainsKey(name))
         {
-            IntPtr data = efl.eo.Globals.dlsym(efl.eo.Globals.RTLD_DEFAULT, name);
+            IntPtr data = Efl.Eo.Globals.dlsym(Efl.Eo.Globals.RTLD_DEFAULT, name);
 
             if (data == IntPtr.Zero) {
-                string error = eina.StringConversion.NativeUtf8ToManagedString(efl.eo.Globals.dlerror());
+                string error = Eina.StringConversion.NativeUtf8ToManagedString(Efl.Eo.Globals.dlerror());
                 throw new Exception(error);
             }
             descriptions.Add(name, data);
@@ -106,7 +106,7 @@ public struct Event_Description {
 };
 
 
-public delegate void Event_Cb(System.IntPtr data, ref Event_StructInternal evt);
+public delegate void EventCb(System.IntPtr data, ref Event_StructInternal evt);
 #pragma warning disable 0169
 public struct Dbg_Info {
     IntPtr name;
@@ -115,7 +115,7 @@ public struct Dbg_Info {
 #pragma warning restore 0169
 
 [StructLayout(LayoutKind.Sequential)]
-public struct Text_Cursor_Cursor {
+public struct TextCursorCursor {
     IntPtr obj;
     UIntPtr pos; // UIntPtr to automatically change size_t between 32/64
     IntPtr node;
@@ -123,7 +123,7 @@ public struct Text_Cursor_Cursor {
 }
 
 [StructLayout(LayoutKind.Sequential)]
-public struct Text_Annotate_Annotation {
+public struct TextAnnotateAnnotation {
     IntPtr list;
     IntPtr obj;
     IntPtr start_node;
@@ -131,35 +131,48 @@ public struct Text_Annotate_Annotation {
     [MarshalAsAttribute(UnmanagedType.U1)]bool is_item;
 }
 
-public delegate void Signal_Cb(IntPtr data, IntPtr obj, IntPtr emission, IntPtr source);
+public delegate void SignalCb(IntPtr data, IntPtr obj, IntPtr emission, IntPtr source);
 
-namespace access {
+namespace Access {
 
-public struct Action_Data {
+public struct ActionData {
     public IntPtr name;
     public IntPtr action;
     public IntPtr param;
     public IntPtr func;
 }
 
-} // namespace access
+public struct StateSet {
+    private ulong val;
 
-} // namespace efl
+    public static implicit operator StateSet(ulong x)
+    {
+        return new StateSet{val=x};
+    }
+    public static implicit operator ulong(StateSet x)
+    {
+        return x.val;
+    }
+}
 
-namespace evas { namespace font {
+} // namespace Access
+
+} // namespace Efl
+
+namespace Evas { namespace Font {
 
 }
 
 
 // C# does not allow typedefs, so we use these implicit conversions.
-public struct Modifier_Mask {
+public struct ModifierMask {
     private ulong mask;
 
-    public static implicit operator Modifier_Mask(ulong x)
+    public static implicit operator ModifierMask(ulong x)
     {
-        return new Modifier_Mask{mask=x};
+        return new ModifierMask{mask=x};
     }
-    public static implicit operator ulong(Modifier_Mask x)
+    public static implicit operator ulong(ModifierMask x)
     {
         return x.mask;
     }
@@ -180,14 +193,14 @@ public struct Coord {
 
 }
 
-public struct Efl_Font_Size {
+public struct EflFontSize {
     int val;
 
-    public Efl_Font_Size(int value) { val = value; }
-    static public implicit operator Efl_Font_Size(int val) {
-        return new Efl_Font_Size(val);
+    public EflFontSize(int value) { val = value; }
+    static public implicit operator EflFontSize(int val) {
+        return new EflFontSize(val);
     }
-    static public implicit operator int(Efl_Font_Size coord) {
+    static public implicit operator int(EflFontSize coord) {
         return coord.val;
     }
 }
@@ -204,10 +217,10 @@ public struct Rectangle {
 
 }
 
-namespace evas {
+namespace Evas {
 
 /* Copied from Evas_Legacy.h */
-public enum Text_Style_Type
+public enum TextStyleType
 {
    ///<summary> plain, standard text.</summary>
    Plain = 0,
@@ -254,7 +267,7 @@ public enum Text_Style_Type
 //
 //
 
-public enum Callback_Type
+public enum CallbackType
 {
   ///<summary> Mouse In Event.</summary>
   EVAS_CALLBACK_MOUSE_IN = 0,
@@ -337,24 +350,24 @@ public enum Callback_Type
 
 }
 
-namespace elm {
+namespace Elm {
 
 namespace atspi {
-public struct State_Set {
+public struct StateSet {
     private ulong val;
 
-    public static implicit operator State_Set(ulong x)
+    public static implicit operator StateSet(ulong x)
     {
-        return new State_Set{val=x};
+        return new StateSet{val=x};
     }
-    public static implicit operator ulong(State_Set x)
+    public static implicit operator ulong(StateSet x)
     {
         return x.val;
     }
 }
 
 [StructLayout(LayoutKind.Sequential)]
-public struct Relation_Set
+public struct RelationSet
 {
     public IntPtr pointer; // list<ptr(elm.atspi.Relation)>
 }
@@ -379,32 +392,10 @@ public struct Class
     IntPtr filter_get;
     IntPtr reusable_content_get;
 }
-} // namespace item
-} // namespace gengrid
+} // namespace Item
+} // namespace Genlist
 
-namespace genlist { namespace item {
-[StructLayout(LayoutKind.Sequential)]
-public struct Class
-{
-    int version;
-    uint refcount;
-    [MarshalAsAttribute(UnmanagedType.U1)]bool delete_me;
-    IntPtr item_style;
-    IntPtr decorate_item_style;
-    IntPtr decorate_all_item_style;
-
-    // Delegates inside Elm_Gen_Item_Class_Functions
-    IntPtr text_get;
-    IntPtr content_get;
-    IntPtr state_get;
-    IntPtr del;
-    IntPtr filter_get;
-    IntPtr reusable_content_get;
-}
-} // namespace item
-} // namespace genlist
-
-} // namespace elm
+} // namespace Elm
 
 // Global delegates
 public delegate IntPtr list_data_get_func_type(IntPtr l);
@@ -413,41 +404,41 @@ public delegate void slider_freefunc_type(IntPtr data);
 public delegate void slider_func_type(double val);
 
 public delegate int Eina_Compare_Cb(IntPtr a, IntPtr b);
-public delegate void Elm_Interface_Scrollable_Cb(IntPtr obj, IntPtr data);
-public delegate void Elm_Interface_Scrollable_Min_Limit_Cb(IntPtr obj,
+public delegate void ElmInterfaceScrollableCb(IntPtr obj, IntPtr data);
+public delegate void ElmInterfaceScrollableMinLimitCb(IntPtr obj,
                                                      [MarshalAsAttribute(UnmanagedType.U1)]bool w,
                                                      [MarshalAsAttribute(UnmanagedType.U1)]bool h);
-public delegate void Elm_Interface_Scrollable_Resize_Cb(IntPtr obj, evas.Coord w, evas.Coord h);
-public delegate void Elm_Entry_Item_Provider_Cb(IntPtr data, IntPtr obj, IntPtr item);
-public delegate void Elm_Entry_Filter_Cb(IntPtr data, IntPtr obj, IntPtr text);
+public delegate void ElmInterfaceScrollableResizeCb(IntPtr obj, Evas.Coord w, Evas.Coord h);
+public delegate void ElmEntryItemProviderCb(IntPtr data, IntPtr obj, IntPtr item);
+public delegate void ElmEntryFilterCb(IntPtr data, IntPtr obj, IntPtr text);
 [return: MarshalAsAttribute(UnmanagedType.U1)]
-public delegate bool Elm_Multibuttonentry_Item_Filter_Cb(IntPtr obj, IntPtr item_label, IntPtr item_data, IntPtr data);
-public delegate IntPtr Elm_Multibuttonentry_Format_Cb(int count, IntPtr data);
+public delegate bool ElmMultibuttonentryItemFilterCb(IntPtr obj, IntPtr item_label, IntPtr item_data, IntPtr data);
+public delegate IntPtr ElmMultibuttonentryFormatCb(int count, IntPtr data);
 [return: MarshalAsAttribute(UnmanagedType.U1)]
-public delegate bool Elm_Fileselector_Filter_Func(IntPtr path, [MarshalAsAttribute(UnmanagedType.U1)]bool dir, IntPtr data);
-public delegate void Evas_Smart_Cb(IntPtr data, IntPtr obj, IntPtr event_info);
-public delegate void Elm_Gesture_Event_Cb(IntPtr data, IntPtr event_info);
-public delegate void Elm_Object_Item_Signal_Cb(IntPtr data, IntPtr item, IntPtr emission, IntPtr source);
-public delegate void Elm_Tooltip_Item_Content_Cb(IntPtr data, IntPtr obj, IntPtr tooltip, IntPtr item);
-public delegate void Elm_Sys_Notify_Send_Cb(IntPtr data, uint id);
-public delegate IntPtr Elm_Calendar_Format_Cb(IntPtr format);
+public delegate bool ElmFileselectorFilterFunc(IntPtr path, [MarshalAsAttribute(UnmanagedType.U1)]bool dir, IntPtr data);
+public delegate void EvasSmartCb(IntPtr data, IntPtr obj, IntPtr event_info);
+public delegate void ElmGestureEventCb(IntPtr data, IntPtr event_info);
+public delegate void ElmObjectItemSignalCb(IntPtr data, IntPtr item, IntPtr emission, IntPtr source);
+public delegate void ElmTooltipItemContentCb(IntPtr data, IntPtr obj, IntPtr tooltip, IntPtr item);
+public delegate void ElmSysNotifySendCb(IntPtr data, uint id);
+public delegate IntPtr ElmCalendarFormatCb(IntPtr format);
 
 namespace edje {
 
-public delegate void Signal_Cb(IntPtr data, IntPtr obj, IntPtr emission, IntPtr source);
-public delegate void Markup_Filter_Cb(IntPtr data, IntPtr obj, IntPtr part, IntPtr text );
-public delegate void Item_Provider_Cb(IntPtr data, IntPtr obj, IntPtr part, IntPtr item);
+public delegate void SignalCb(IntPtr data, IntPtr obj, IntPtr emission, IntPtr source);
+public delegate void MarkupFilterCb(IntPtr data, IntPtr obj, IntPtr part, IntPtr text );
+public delegate void ItemProviderCb(IntPtr data, IntPtr obj, IntPtr part, IntPtr item);
 // Message_Handler_Cb is now legacy
 
 namespace text {
-public delegate void Filter_Cb(IntPtr data, IntPtr obj, IntPtr part, int _type, IntPtr text);
-public delegate void Change_Cb(IntPtr data, IntPtr obj, IntPtr part);
+public delegate void FilterCb(IntPtr data, IntPtr obj, IntPtr part, int _type, IntPtr text);
+public delegate void ChangeCb(IntPtr data, IntPtr obj, IntPtr part);
 }
 
 
 } // namespace edje
 
-public enum Elm_Code_Status_Type {
+public enum ElmCodeStatusType {
    ELM_CODE_STATUS_TYPE_DEFAULT = 0,
    ELM_CODE_STATUS_TYPE_CURRENT,
    ELM_CODE_STATUS_TYPE_IGNORED,
