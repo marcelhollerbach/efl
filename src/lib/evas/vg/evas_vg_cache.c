@@ -240,7 +240,7 @@ evas_cache_vg_file_open(const Eina_File *file, const char *key, Eina_Bool mmap)
    if (!vfd)
      {
         vfd = _vg_load_from_file(file, key, mmap);
-        //File is exists.
+        //File exists.
         if (vfd) eina_hash_add(vg_cache->vfd_hash, eina_strbuf_string_get(hash_key), vfd);
      }
    eina_strbuf_free(hash_key);
