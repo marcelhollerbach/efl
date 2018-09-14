@@ -348,7 +348,11 @@ _efl_canvas_vg_efl_file_file_set(Eo *eo_obj, Efl_Canvas_Vg_Data *pd, const char 
         pd->key = NULL;
         return EINA_TRUE;
      }
-   if (!pd->file) pd->file = eina_file_open(file, EINA_FALSE);
+   if (!pd->file)
+     {
+        pd->file = eina_file_open(file, EINA_FALSE);
+        if (!pd->file) return EINA_FALSE;
+     }
    else
      {
         const char *filename = eina_file_filename_get(pd->file);
