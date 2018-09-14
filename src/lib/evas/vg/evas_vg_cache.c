@@ -272,6 +272,12 @@ evas_cache_vg_entry_create(const Eina_File *file,
    if (!vg_entry)
      {
         vg_entry = calloc(1, sizeof(Vg_Cache_Entry));
+        if (!vg_entry)
+          {
+             CRI("Failed to alloc Vg_Cache_Entry");
+             eina_strbuf_free(hash_key);
+             return NULL;
+          }
         vg_entry->file = file;
         vg_entry->key = eina_stringshare_add(key);
         vg_entry->w = w;
