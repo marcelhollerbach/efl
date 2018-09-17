@@ -919,8 +919,8 @@ EOLIAN static int
 _efl_canvas_vg_efl_gfx_image_animation_controller_animated_frame_count_get(const Eo *eo_obj EINA_UNUSED,
                                                                            Efl_Canvas_Vg_Data *pd EINA_UNUSED)
 {
-   //TODO: 
-   return 0;
+   if (!pd->vg_entry) return 0;
+   return evas_cache_vg_anim_frame_count_get(pd->vg_entry);
 }
 
 EOLIAN static Efl_Gfx_Image_Animation_Controller_Loop_Hint
@@ -969,8 +969,7 @@ EOLIAN static int
 _efl_canvas_vg_efl_gfx_image_animation_controller_animated_frame_get(const Eo *eo_obj EINA_UNUSED,
                                                                      Efl_Canvas_Vg_Data *pd EINA_UNUSED)
 {
-   if (!pd->vg_entry) return 0;
-   return evas_cache_vg_anim_frame_count_get(pd->vg_entry);
+   return pd->frame_index;
 }
 
 #include "efl_canvas_vg.eo.c"
