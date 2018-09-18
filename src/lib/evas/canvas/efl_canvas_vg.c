@@ -502,8 +502,6 @@ _evas_vg_render(Evas_Object_Protected_Data *obj, Efl_Canvas_Vg_Data *pd,
                 void *engine, void *output, void *context, void *surface, Efl_VG *n,
                 Eina_Array *clips, Eina_Bool do_async)
 {
-   if (!pd->file) return;
-
    if (efl_isa(n, EFL_CANVAS_VG_CONTAINER_CLASS))
      {
         Efl_Canvas_Vg_Container_Data *vc;
