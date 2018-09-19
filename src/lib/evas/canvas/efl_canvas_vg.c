@@ -121,15 +121,6 @@ _evas_vg_resize(void *data, const Efl_Event *ev)
    _update_vgtree_viewport(ev->object, pd);
 }
 
-/* the actual api call to add a vector graphic object */
-EAPI Evas_Object *
-evas_object_vg_add(Evas *e)
-{
-   EINA_SAFETY_ON_FALSE_RETURN_VAL(efl_isa(e, EVAS_CANVAS_CLASS), NULL);
-   // TODO: Ask backend to return the main Ector_Surface
-   return efl_add(MY_CLASS, evas_find(e), efl_canvas_object_legacy_ctor(efl_added));
-}
-
 EOLIAN static Efl_VG *
 _efl_canvas_vg_root_node_get(const Eo *obj EINA_UNUSED, Efl_Canvas_Vg_Data *pd)
 {
@@ -977,6 +968,27 @@ _efl_canvas_vg_efl_gfx_image_animation_controller_animated_frame_get(const Eo *e
                                                                      Efl_Canvas_Vg_Data *pd EINA_UNUSED)
 {
    return pd->frame_index;
+}
+
+/* the actual api call to add a vector graphic object */
+EAPI Evas_Object *
+evas_object_vg_add(Evas *e)
+{
+   EINA_SAFETY_ON_FALSE_RETURN_VAL(efl_isa(e, EVAS_CANVAS_CLASS), NULL);
+   // TODO: Ask backend to return the main Ector_Surface
+   return efl_add(MY_CLASS, evas_find(e), efl_canvas_object_legacy_ctor(efl_added));
+}
+
+EAPI int
+evas_object_vg_animated_frame_count_get(const Evas_Object *obj)
+{
+   return efl_gfx_image_animated_frame_count_get(obj);
+}
+
+EAPI Eina_Bool
+evas_object_vg_animated_frame_set(Evas_Object *obj, int frame_index)
+{
+   return efl_gfx_image_animated_frame_set(obj, frame_index);
 }
 
 #include "efl_canvas_vg.eo.c"

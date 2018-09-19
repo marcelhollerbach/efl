@@ -3602,6 +3602,26 @@ EAPI Evas_Object *evas_object_rectangle_add(Evas *e) EINA_WARN_UNUSED_RESULT EIN
  */
 EAPI Evas_Object *evas_object_vg_add(Evas *e) EINA_WARN_UNUSED_RESULT EINA_ARG_NONNULL(1) EINA_MALLOC;
 
+/**
+ * Get the total number of frames of the vector, if animated.
+ *
+ * @return 0, if not animated.
+ *
+ * @since 1.22
+ */
+EAPI int evas_object_vg_animated_frame_count_get(const Evas_Object *obj) EINA_ARG_NONNULL(1);
+
+/**
+ * Set the frame to current frame of an animated vector.
+ *
+ * @param[in] frame_index The index of current frame.
+ *
+ * @return Returns @c EINA_TRUE, if the frame index is valid.
+ *
+ * @since 1.22
+ */
+EAPI Eina_Bool evas_object_vg_animated_frame_set(Evas_Object *obj, int frame_index) EINA_ARG_NONNULL(1, 2);
+
 #include "canvas/efl_canvas_vg_node.eo.legacy.h"
 #include "canvas/efl_canvas_vg.eo.legacy.h"
 #include "canvas/efl_canvas_vg_container.eo.legacy.h"
