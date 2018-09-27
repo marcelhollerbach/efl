@@ -991,4 +991,10 @@ evas_object_vg_animated_frame_set(Evas_Object *obj, int frame_index)
    return efl_gfx_image_animated_frame_set(obj, frame_index);
 }
 
+EAPI Eina_Bool
+evas_object_vg_mmap_set(Evas_Object *obj, const Eina_File *f, char *key)
+{
+   return efl_file_mmap_set(obj, f, key);
+}
+
 #include "efl_canvas_vg.eo.c"

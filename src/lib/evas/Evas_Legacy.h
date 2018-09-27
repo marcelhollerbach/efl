@@ -3612,6 +3612,23 @@ EAPI Evas_Object *evas_object_vg_add(Evas *e) EINA_WARN_UNUSED_RESULT EINA_ARG_N
 EAPI int evas_object_vg_animated_frame_count_get(const Evas_Object *obj) EINA_ARG_NONNULL(1);
 
 /**
+ *
+ * Set the source mmaped file from where an vector object must fetch the real
+ * vector data (it must be an Eina_File).
+ *
+ * If the file supports multiple data stored in it (as Eet files do),
+ * you can specify the key to be used as the index of the image in
+ * this file.
+ *
+ * @since 1.22
+ *
+ * @param[in] f The mmaped file
+ * @param[in] key The vg key in @p file (if its an Eet one), or @c
+NULL, otherwise.
+ */
+EAPI Eina_Bool evas_object_vg_mmap_set(Evas_Object *obj, const Eina_File *f, char *key);
+
+/**
  * Set the frame to current frame of an animated vector.
  *
  * @param[in] frame_index The index of current frame.
