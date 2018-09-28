@@ -1209,6 +1209,7 @@ low_mem_current:
                }
           }
         break;
+#endif
 
       case EDJE_ACTION_TYPE_VG_ANIM_STOP:
         if (_edje_block_break(ed))
@@ -1281,7 +1282,6 @@ low_mem_current:
           }
         break;
 
-#endif
       default:
         // _edje_emit(ed, "program,start", pr->name);
         // _edje_emit(ed, "program,stop", pr->name);

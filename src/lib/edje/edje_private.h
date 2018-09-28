@@ -1594,9 +1594,9 @@ struct _Edje_Part_Description_Spec_Camera
 struct _Edje_Part_Description_Spec_Svg
 {
    int                   id; /* the svg id to use */
-   Edje_Vector_File_Type type;
    Eina_Bool             set; /* if vg condition it's content */
-   double               frame;
+   Edje_Vector_File_Type type;
+   double                frame;
 };
 
 struct _Edje_Part_Description_Image
