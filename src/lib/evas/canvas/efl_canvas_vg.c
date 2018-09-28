@@ -980,6 +980,18 @@ evas_object_vg_add(Evas *e)
 }
 
 EAPI int
+evas_object_vg_animated_frame_get(const Evas_Object *obj)
+{
+   return efl_gfx_image_animated_frame_get(obj);
+}
+
+EAPI double
+evas_object_vg_animated_frame_duration_get(const Evas_Object *obj, int start_frame, int frame_num)
+{
+   return efl_gfx_image_animated_frame_duration_get(obj, start_frame, frame_num);
+}
+
+EAPI int
 evas_object_vg_animated_frame_count_get(const Evas_Object *obj)
 {
    return efl_gfx_image_animated_frame_count_get(obj);

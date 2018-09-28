@@ -3612,6 +3612,26 @@ EAPI Evas_Object *evas_object_vg_add(Evas *e) EINA_WARN_UNUSED_RESULT EINA_ARG_N
 EAPI int evas_object_vg_animated_frame_count_get(const Evas_Object *obj) EINA_ARG_NONNULL(1);
 
 /**
+ * Get the duration of a sequence of frames.
+ *
+ * This returns total duration in seconds that the specified
+ * sequence of frames should take.
+ *
+ * If @p start_frame is 1 and @p frame_num is 0, this returns the
+ * duration of frame 1. If @p start_frame is 1 and @p frame_num is 1,
+ * this returns the total duration of frame 1 + frame 2.
+ *
+ * @param[in] start_frame The first frame, ranges from 1 to maximum frame count.
+ * @param[in] frame_num Number of frames in the sequence, starts from 0.
+ *
+ * @return Duration in seconds.
+ *
+ * @see evas_object_vg_animated_frame_count_get()
+ * @since 1.22
+ */
+EAPI double evas_object_vg_animated_frame_duration_get(const Evas_Object *obj, int start_frame, int frame_num) EINA_ARG_NONNULL(1);
+
+/**
  *
  * Set the source mmaped file from where an vector object must fetch the real
  * vector data (it must be an Eina_File).
@@ -3638,6 +3658,18 @@ EAPI Eina_Bool evas_object_vg_mmap_set(Evas_Object *obj, const Eina_File *f, cha
  * @since 1.22
  */
 EAPI Eina_Bool evas_object_vg_animated_frame_set(Evas_Object *obj, int frame_index) EINA_ARG_NONNULL(1, 2);
+
+/**
+ * Get the current frame of an animated vector.
+ *
+ * @return Returns the frame index.
+ *
+ * @see evas_object_vg_animated_frame_set()
+ *
+ * @since 1.22
+ */
+EAPI int evas_object_vg_animated_frame_get(const Evas_Object *obj) EINA_ARG_NONNULL(1);
+
 
 #include "canvas/efl_canvas_vg_node.eo.legacy.h"
 #include "canvas/efl_canvas_vg.eo.legacy.h"
