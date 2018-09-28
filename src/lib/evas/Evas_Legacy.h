@@ -3633,6 +3633,23 @@ EAPI double evas_object_vg_animated_frame_duration_get(const Evas_Object *obj, i
 
 /**
  *
+ * Set the source file from where an vector object must fetch the real
+ * vector data (it may be an Eet file, besides pure image ones).
+ *
+ * If the file supports multiple data stored in it (as Eet files do),
+ * you can specify the key to be used as the index of the vector in
+ * this file.
+ *
+ * @param[in] file The vector file path.
+ * @param[in] key The vector key in @p file (if its an Eet one), or @c
+NULL, otherwise.
+ *
+ * @since 1.22
+ */
+EAPI Eina_Bool evas_object_vg_file_set(Evas_Object *obj, const char *file, const char *key);
+
+/**
+ *
  * Set the source mmaped file from where an vector object must fetch the real
  * vector data (it must be an Eina_File).
  *
@@ -3646,7 +3663,7 @@ EAPI double evas_object_vg_animated_frame_duration_get(const Evas_Object *obj, i
  * @param[in] key The vg key in @p file (if its an Eet one), or @c
 NULL, otherwise.
  */
-EAPI Eina_Bool evas_object_vg_mmap_set(Evas_Object *obj, const Eina_File *f, char *key);
+EAPI Eina_Bool evas_object_vg_mmap_set(Evas_Object *obj, const Eina_File *f, const char *key);
 
 /**
  * Set the frame to current frame of an animated vector.
