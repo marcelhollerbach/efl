@@ -15,6 +15,7 @@ elua_suite = executable('elua_suite',
   elua_suite_src,
   include_directories : config_dir,
   dependencies: [elua_suite_deps, check],
+  link_args : bin_linker_args,
   c_args : [
     '-DELUA_BINDINGS_DIR="'+elua_bindings_dir+'"',
     '-DELUA_CORE_DIR="'+elua_core_dir+'"',
