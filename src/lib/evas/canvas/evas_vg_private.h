@@ -53,6 +53,7 @@ struct _Efl_Canvas_Vg_Data
    int                        frame_index;
    Eina_File                 *file;
    Eina_Stringshare          *key;
+   void                      *cache_key; // store ector surface cache key
 
    Eina_Bool                  changed : 1;
 };
