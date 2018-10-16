@@ -128,7 +128,7 @@ _efl_canvas_vg_root_node_get(const Eo *obj EINA_UNUSED, Efl_Canvas_Vg_Data *pd)
 
    if (pd->vg_entry) root = evas_cache_vg_tree_get(pd->vg_entry, pd->frame_index);
    else if (pd->user_entry) root = pd->user_entry->root;
-   else root = NULL;
+   else root = pd->root;
 
    return root;
 }
