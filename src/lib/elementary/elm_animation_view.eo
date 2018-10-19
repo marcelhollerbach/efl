@@ -1,0 +1,63 @@
+class Elm.Animation_View (Efl.Ui.Widget, Efl.Gfx.View, Efl.Ui.Legacy, Efl.File)
+{
+   [[Elementary Animation View class]]
+   legacy_prefix: elm_animation_view;
+   eo_prefix: elm_obj_animation_view;
+   event_prefix: elm_animation_view;
+   methods {
+      @property auto_play {
+         set {
+         }
+         get {
+         }
+         values {
+            auto_play: bool;
+         }
+      }
+      @property auto_repeat {
+         set {
+         }
+         get {
+         }
+         values {
+            auto_repeat: bool;
+         }
+      }
+      @property speed {
+         set {
+            return: bool;
+         }
+         get {
+         }
+         values {
+            speed: double;
+         }
+      }
+      play {
+         return: bool;
+      }
+      play_back {
+         return: bool;
+      }
+      pause {
+         return: bool;
+      }
+      resume {
+         return: bool;
+      }
+      stop {
+         return: bool;
+      }
+      is_play_back {
+         return: bool;
+      }
+   }
+   implements {
+      Efl.Object.constructor;
+      Efl.Object.destructor;
+      Efl.File.file { set; }
+      Efl.Gfx.Entity.visible { set; }
+      Efl.Gfx.Entity.position { set; }
+      Efl.Gfx.Entity.size { set; }
+   }
+}
