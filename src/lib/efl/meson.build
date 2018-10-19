@@ -9,6 +9,7 @@ efl_header_src = [
 efl_src = []
 
 subdir('interfaces')
+package_subdirs += 'interfaces'
 
 efl_lib = library('efl',
     efl_src, pub_eo_file_target,

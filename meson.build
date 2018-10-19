@@ -230,6 +230,7 @@ foreach package : subprojects
     priv_eo_file_target = []
     pub_eo_files = []
     pub_eo_types_files = []
+    package_subdirs = []
 
     foreach static_lib : package[9]
       if get_variable(static_lib, tmp_empty) == tmp_empty
@@ -265,10 +266,15 @@ foreach package : subprojects
       tmp_lib = get_variable(package_name+'_lib')
       tmp_deps = get_variable(package_name+'_deps')
       tmp_pub_deps = get_variable(package_name+'_pub_deps')
+      tmp_package_subdirs = []
+
+      foreach subdir : package_subdirs
+        tmp_package_subdirs += join_paths(package_version_name, subdir)
+      endforeach
 
       pkgconfig.generate(tmp_lib,
         name : '-'.join(package_name.split('_')),
-        subdirs : package_version_name,
+        subdirs : [package_version_name] + tmp_package_subdirs,
         version : version_major + '.' + version_minor,
         libraries : tmp_pub_deps,
         requires : package[8],
@@ -276,13 +282,14 @@ foreach package : subprojects
       if package_name == 'ethumb_client'
         pkgconfig.generate(tmp_lib,
           name : package_name,
-          subdirs : package_version_name,
+          subdirs : [package_version_name] + tmp_package_subdirs,
           version : version_major + '.' + version_minor,
           libraries : tmp_pub_deps,
           requires : package[8],
         )
       endif
     endif
+    set_variable(package_name + '_include_dirs', package_subdirs)
   else
     message(package_name+' disabled!')
   endif

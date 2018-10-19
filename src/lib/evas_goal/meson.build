@@ -21,11 +21,12 @@ evas_bin = declare_dependency(
    include_directories : evas_include_directories
 )
 
+package_subdirs += join_paths('evas-'+version_major, 'canvas')
 automatic_pkgfile = false
 
 pkgconfig.generate(evas_lib,
   name : 'evas',
-  subdirs : 'evas-'+version_major,
+  subdirs : ['evas-'+version_major] + package_subdirs,
   version : version_major + '.' + version_minor,
   libraries : [eina, ecore, ector, emile, dependency('luajit')],
 )

@@ -15,6 +15,7 @@ cxx_sublibs = [
 ]
 
 increased_dependency = []
+growing_deps = []
 
 foreach lib : cxx_sublibs
   package_name = lib[0].to_lower()
@@ -89,13 +90,19 @@ foreach lib : cxx_sublibs
   if lib[2]
     test_dirs += package_name + '_cxx'
   endif
+  tmp_package_subdirs = [package_version_name]
+
+  foreach subdir : get_variable(package_name + '_include_dirs')
+    tmp_package_subdirs += join_paths(package_version_name, subdir)
+  endforeach
+
   pkgconfig.generate(
     name : '-'.join(package_name.split('_')) + '-cxx',
     description : lib[0]+' cxx bindings',
-    subdirs : package_version_name,
+    subdirs : tmp_package_subdirs,
     version : version_major + '.' + version_minor,
     libraries : dep,
-    #for now - just drag the whole elementary in
-    requires : 'elementary',
+    requires : growing_deps + [package_name],
   )
+  growing_deps += package_name + '-cxx'
 endforeach
