@@ -22,7 +22,7 @@ struct _Elm_Animation_View_Data
 };
 
 #define ELM_ANIMATION_VIEW_DATA_GET(o, sd) \
-  Elm_Glview_Data * sd = efl_data_scope_get(o, ELM_ANIMATION_VIEW_CLASS)
+  Elm_Animation_View_Data * sd = efl_data_scope_get(o, ELM_ANIMATION_VIEW_CLASS)
 
 #define ELM_ANIMATION_VIEW_DATA_GET_OR_RETURN(o, ptr)   \
   ELM_ANIMATION_VIEW_DATA_GET(o, ptr);                  \

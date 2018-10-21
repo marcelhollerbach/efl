@@ -6,50 +6,115 @@ class Elm.Animation_View (Efl.Ui.Widget, Efl.Gfx.View, Efl.Ui.Legacy, Efl.File)
    event_prefix: elm_animation_view;
    methods {
       @property auto_play {
+         [[Animation is started automatically when it's ready.
+
+           If $auto_play is $true, animation view will start animation automatically
+           when it ready. If animation view is disabled, invisible, it will pause
+           animation and resume again when it's visable.
+
+           Warning: This API is only valid before it have file_set().]] 
          set {
          }
          get {
          }
          values {
-            auto_play: bool;
+            auto_play: bool; [[$true Enable auto play mode, disable otherwise]]
          }
       }
       @property auto_repeat {
-         set {
+         [[Loop Animation.
+
+           If $auto_repeat is $true, it repeats animation when frame is reached to 
+           end. It could be applied to both play and play_back. ]]
+           set {
          }
          get {
          }
          values {
-            auto_repeat: bool;
+            auto_repeat: bool; [[Enable loop mode if $true, disable otherwise]]
          }
       }
       @property speed {
+         [[Adjust animation speed.
+
+           Control animation speed by multi-plying $speed value. If you want to play
+           animation double-time faster, you can set $speed 2. If you want to play
+           animation double-time slower, you can se $speed 0.5.
+
+           Warning: speed must be greater than zero.]]
          set {
-            return: bool;
+            return: bool; [[$true when it's successful. $false otherwise.]]
          }
          get {
          }
          values {
-            speed: double;
+            speed: double; [[ Speed factor. Default value is 1]]
+         }
+      }
+      @property duration_time {
+         [[Get the duration time of animation
+           
+           This returns total duration time of the animation in the second. ]]
+         get {
+         }
+         values {
+            frame_duration: double; [[duration time in the second]]
+         }
+      }
+      @property keyframe {
+         [[Set the keyframe position of an animation view. ]]
+
+         set {
+         }
+         get {
+         }
+         values {
+            keyframe: double; [[Frame of animation range is 0 ~ 1.]]
          }
       }
       play {
-         return: bool;
+         [[Play Animation one time instantly.
+
+           If curren keyframe is on a certain position by playing back, this will
+           play from there. ]]
+
+         return: bool; [[$true when it's successful. $false otherwise.]]
       }
       play_back {
-         return: bool;
+         [[Play back animation one time instantly.
+
+           If current keyframe is on a certain position by playing, this will
+           rewind animation from there. ]]
+
+         return: bool; [[$true when it's successful. $false otherwise.]]
       }
       pause {
-         return: bool;
+         [[Pause Animation.
+
+           Once animation is paused, that must get resume to play again. ]]
+
+         return: bool; [[$true when it's successful. $false otherwise.]]
       }
       resume {
-         return: bool;
+         [[Resume Animation.
+
+           This will work only if animation is paused. ]]
+
+         return: bool; [[$true when it's successful. $false otherwise.]]
       }
       stop {
-         return: bool;
+         [[Stop Animation.
+
+           Stop animation whatever it's state and reset to first frame of animation.
+         ]]
+
+         return: bool; [[$true when it's successful. $false otherwise.]]
       }
       is_play_back {
-         return: bool;
+         [[Return the status whether current animation is on playing forward or
+           backward.]]
+
+         return: bool; [[$true if animation on playing back, $false otherwise.]]
       }
    }
    implements {

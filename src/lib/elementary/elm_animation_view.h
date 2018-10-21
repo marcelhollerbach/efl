@@ -9,9 +9,12 @@
  *
  * This widget emits the following signals, besides the ones sent from
  * @ref Animation_View:
- * - @c "focused" - when animation_view has received focus.
- * - @c "unfocused" - when animation_view has lost focus.
- * - @c "language,changed" - the program's language changed
+ * @li "play,start": animation is just started.
+ * @li "play,repeat": animation is just repeated.
+ * @li "play,done": animation is finished.
+ * @li "play,pause": animation is paused.
+ * @li "play,resume": animation is resumed.
+ * @li "play,stop": animation is stopped.
  *
  * Below is an illustrative example of how to use Animation_View and and OpenGL
  * to render in elementary environment.
