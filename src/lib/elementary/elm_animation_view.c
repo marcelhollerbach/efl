@@ -463,7 +463,7 @@ _elm_animation_view_duration_time_get(const Eo *obj EINA_UNUSED, Elm_Animation_V
 }
 
 EOLIAN static Eina_Bool
-_elm_animation_view_is_play_back(Eo *obj EINA_UNUSED, Elm_Animation_View_Data *pd)
+_elm_animation_view_is_playing_back(Eo *obj EINA_UNUSED, Elm_Animation_View_Data *pd)
 {
    return pd->play_back;
 }
