@@ -110,6 +110,10 @@ _transit_del_cb(Elm_Transit_Effect *effect, Elm_Transit *transit)
 {
    Elm_Animation_View_Data *pd = (Elm_Animation_View_Data *) effect;
 
+   if ((pd->state == ELM_ANIMATION_VIEW_STATE_PLAY && pd->keyframe == 1) ||
+       (pd->state == ELM_ANIMATION_VIEW_STATE_PLAY_BACK && pd->keyframe == 0))
+     evas_object_smart_callback_call(pd->obj, SIG_PLAY_DONE, NULL);
+
    if (pd->transit != transit) return;
 
    Elm_Animation_View_State prev_state = pd->state;
@@ -156,6 +160,8 @@ _transit_cb(Elm_Transit_Effect *effect, Elm_Transit *transit, double progress)
              pd->repeat_times = repeat_times;
           }
      }
+
+   evas_object_smart_callback_call(pd->obj, SIG_PLAY_UPDATE, NULL);
 }
 
 EOLIAN static void
@@ -176,8 +182,8 @@ EOLIAN static void
 _elm_animation_view_efl_canvas_group_group_del(Eo *obj, Elm_Animation_View_Data *pd EINA_UNUSED)
 {
    ELM_WIDGET_DATA_GET_OR_RETURN(obj, wd);
-
    efl_canvas_group_del(efl_super(obj, MY_CLASS));
+   pd->state = ELM_ANIMATION_VIEW_STATE_NOT_READY;
 }
 
 EOLIAN static void
