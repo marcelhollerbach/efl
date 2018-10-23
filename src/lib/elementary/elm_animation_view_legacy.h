@@ -40,7 +40,7 @@ NULL, otherwise.
  *
  * @since 1.22
 */
-EAPI Eina_Bool        elm_animation_view_file_set(Evas_Object *obj, const char *file, const char *key);
+EAPI Eina_Bool        elm_animation_view_file_set(Elm_Animation_View *obj, const char *file, const char *key);
 
 /**
  * @brief Get current animation view state.
@@ -54,5 +54,18 @@ EAPI Eina_Bool        elm_animation_view_file_set(Evas_Object *obj, const char *
  * @since 1.22
  */
 EAPI Elm_Animation_View_State elm_animation_view_state_get(const Elm_Animation_View *obj);
+
+/**
+ * @brief Returns the status whether current animation is on playing forward or backward.
+ *
+ * @return @c EINA_TRUE, if animation on playing back, @c EINA_FALSE otherwise.
+ *
+ * @ingroup Elm_Animation_View
+ *
+ * @warning If animation view is not on playing, it will return @c EINA_FALSE.
+ *
+ * @since 1.22
+ */
+EAPI Eina_Bool         elm_animation_view_is_playing_back(const Elm_Animation_View *obj);
 
 #include "elm_animation_view.eo.legacy.h"

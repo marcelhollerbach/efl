@@ -8,7 +8,7 @@ class Elm.Animation_View (Efl.Ui.Widget, Efl.Gfx.View, Efl.Ui.Legacy, Efl.File)
       @property auto_play {
          [[Animation will be started automatically when it's possible.
 
-				If $auto_play is $true, animation will be started when it's readied.
+           If $auto_play is $true, animation will be started when it's readied.
            The condition of auto play is when animation view opened file successfully,
            yet to play it plus when the object is visible.
            If animation view is disabled, invisible,
@@ -126,14 +126,6 @@ class Elm.Animation_View (Efl.Ui.Widget, Efl.Gfx.View, Efl.Ui.Legacy, Efl.File)
            the animation status will be stopped.]]
 
          return: bool; [[$true when it's successful. $false otherwise.]]
-      }
-      is_playing_back {
-         [[Return the status whether current animation is on playing forward or
-           backward.
-
-           Warning: If animation view is not on playing, it will return $false.]]
-
-         return: bool; [[$true if animation on playing back, $false otherwise.]]
       }
    }
    implements {

@@ -11,9 +11,13 @@ struct _Elm_Animation_View_Data
    Eo* obj;                           //Elm_Animation_View Object
    Eo* vg;                            //Evas_Object_Vg
    Elm_Animation_View_State state;
+   Ecore_Animator *animator;
    Elm_Transit *transit;
    Eina_Stringshare *file;
    double speed;
+   double keyframe;
+   double frame_cnt;
+   int repeat_times;
 
    Eina_Bool play_back : 1;
    Eina_Bool auto_play : 1;
