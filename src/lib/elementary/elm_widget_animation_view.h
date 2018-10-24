@@ -11,7 +11,6 @@ struct _Elm_Animation_View_Data
    Eo* obj;                           //Elm_Animation_View Object
    Eo* vg;                            //Evas_Object_Vg
    Elm_Animation_View_State state;
-   Ecore_Animator *animator;
    Elm_Transit *transit;
    Eina_Stringshare *file;
    double speed;

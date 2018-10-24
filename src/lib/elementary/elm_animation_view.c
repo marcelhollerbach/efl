@@ -138,15 +138,8 @@ _transit_cb(Elm_Transit_Effect *effect, Elm_Transit *transit, double progress)
      }
 
    //FIXME: This is wrong...
-   if (pd->play_back)
-     {
-        progress = 1 - progress;
-        pd->state = ELM_ANIMATION_VIEW_STATE_PLAY_BACK;
-     }
-   else
-     {
-        pd->state = ELM_ANIMATION_VIEW_STATE_PLAY;
-     }
+   if (pd->play_back) pd->state = ELM_ANIMATION_VIEW_STATE_PLAY_BACK;
+   else pd->state = ELM_ANIMATION_VIEW_STATE_PLAY;
 
    pd->keyframe = progress;
    evas_object_vg_animated_frame_set(pd->vg, (int) (pd->frame_cnt * progress));
@@ -181,17 +174,17 @@ _elm_animation_view_efl_canvas_group_group_add(Eo *obj, Elm_Animation_View_Data 
 EOLIAN static void
 _elm_animation_view_efl_canvas_group_group_del(Eo *obj, Elm_Animation_View_Data *pd EINA_UNUSED)
 {
-   ELM_WIDGET_DATA_GET_OR_RETURN(obj, wd);
-   efl_canvas_group_del(efl_super(obj, MY_CLASS));
+   if (pd->file) eina_stringshare_del(pd->file);
+   if (pd->transit) elm_transit_del(pd->transit);
    pd->state = ELM_ANIMATION_VIEW_STATE_NOT_READY;
+
+   efl_canvas_group_del(efl_super(obj, MY_CLASS));
 }
 
 EOLIAN static void
 _elm_animation_view_efl_object_destructor(Eo *obj,
-                                          Elm_Animation_View_Data *pd)
+                                          Elm_Animation_View_Data *pd EINA_UNUSED)
 {
-   if (pd->file) eina_stringshare_del(pd->file);
-   if (pd->transit) elm_transit_del(pd->transit);
    efl_destructor(efl_super(obj, MY_CLASS));
 }
 
@@ -425,12 +418,16 @@ _elm_animation_view_play_back(Eo *obj EINA_UNUSED, Elm_Animation_View_Data *pd)
    pd->play_back = EINA_TRUE;
 
    if (!pd->file) return EINA_FALSE;
-   if (!pd->transit) if (!_ready_play(pd)) return EINA_FALSE;
+   if (!pd->transit && !_ready_play(pd)) return EINA_FALSE;
 
    pd->auto_play_pause = EINA_FALSE;
 
-   if (pd->transit && pd->state == ELM_ANIMATION_VIEW_STATE_STOP)
-     _transit_go_facade(pd);
+   if (pd->transit)
+     {
+        if (pd->state == ELM_ANIMATION_VIEW_STATE_STOP)
+          _transit_go_facade(pd);
+        elm_transit_revert(pd->transit);
+     }
 
    return EINA_TRUE;
 }
@@ -498,7 +495,7 @@ elm_animation_view_state_get(const Elm_Animation_View *obj)
 }
 
 EAPI Eina_Bool
-elm_animation_view_is_playing_back(const Eo *obj)
+elm_animation_view_is_playing_back(const Elm_Animation_View *obj)
 {
    ELM_ANIMATION_VIEW_DATA_GET(obj, pd);
    if (!pd) return EINA_FALSE;
