@@ -183,6 +183,7 @@ _efl_canvas_vg_root_node_set(Eo *obj, Efl_Canvas_Vg_Data *pd, Efl_VG *root_node)
 
    // force a redraw
    pd->changed = EINA_TRUE;
+   pd->cache_key = NULL;
    evas_object_change(obj, efl_data_scope_get(obj, EFL_CANVAS_OBJECT_CLASS));
 }
 
