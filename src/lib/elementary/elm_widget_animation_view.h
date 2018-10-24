@@ -17,6 +17,7 @@ struct _Elm_Animation_View_Data
    double keyframe;
    double frame_cnt;
    int repeat_times;
+   double frame_duration;
 
    Eina_Bool play_back : 1;
    Eina_Bool auto_play : 1;

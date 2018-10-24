@@ -43,8 +43,6 @@ _transit_go_facade(Elm_Animation_View_Data *pd)
 {
    pd->repeat_times = 0;
    elm_transit_go(pd->transit);
-   if (pd->play_back) pd->state = ELM_ANIMATION_VIEW_STATE_PLAY_BACK;
-   else pd->state = ELM_ANIMATION_VIEW_STATE_PLAY;
    evas_object_smart_callback_call(pd->obj, SIG_PLAY_START, NULL);
 }
 
@@ -137,7 +135,6 @@ _transit_cb(Elm_Transit_Effect *effect, Elm_Transit *transit, double progress)
         return;
      }
 
-   //FIXME: This is wrong...
    if (pd->play_back) pd->state = ELM_ANIMATION_VIEW_STATE_PLAY_BACK;
    else pd->state = ELM_ANIMATION_VIEW_STATE_PLAY;
 
@@ -169,6 +166,7 @@ _elm_animation_view_efl_canvas_group_group_add(Eo *obj, Elm_Animation_View_Data 
 
    priv->vg = vg;
    priv->speed = 1;
+   priv->frame_duration = 0;
 }
 
 EOLIAN static void
@@ -212,19 +210,17 @@ _ready_play(Elm_Animation_View_Data *pd)
         elm_transit_del(pd->transit);
      }
 
-   double frame_duration = 0;
-
    pd->frame_cnt = (double) evas_object_vg_animated_frame_count_get(pd->vg);
-   frame_duration = evas_object_vg_animated_frame_duration_get(pd->vg, 0, 0);
+   pd->frame_duration = evas_object_vg_animated_frame_duration_get(pd->vg, 0, 0);
    evas_object_vg_animated_frame_set(pd->vg, 0);
    pd->keyframe = 0;
 
-   if (frame_duration > 0)
+   if (pd->frame_duration > 0)
      {
         Elm_Transit *transit = elm_transit_add();
         elm_transit_object_add(transit, pd->vg);
         if (pd->auto_repeat) elm_transit_repeat_times_set(transit, -1);
-        elm_transit_duration_set(transit, frame_duration * (1/pd->speed));
+        elm_transit_duration_set(transit, pd->frame_duration * (1/pd->speed));
         elm_transit_effect_add(transit, _transit_cb, pd, _transit_del_cb);
         elm_transit_objects_final_state_keep_set(transit, EINA_TRUE);
         pd->transit = transit;
@@ -248,6 +244,7 @@ _elm_animation_view_efl_file_file_set(Eo *obj EINA_UNUSED, Elm_Animation_View_Da
         pd->state = ELM_ANIMATION_VIEW_STATE_NOT_READY;
         pd->keyframe = 0;
         pd->frame_cnt = 0;
+        pd->frame_duration = 0;
         if (pd->transit) elm_transit_del(pd->transit);
         return EINA_FALSE;
      }
@@ -439,11 +436,7 @@ _elm_animation_view_speed_set(Eo *obj EINA_UNUSED, Elm_Animation_View_Data *pd, 
    pd->speed = speed;
 
    if (pd->transit)
-     {
-        //FIXME: duration doesn't work...
-        double duration = elm_transit_duration_get(pd->transit);
-        elm_transit_duration_set(pd->transit, duration * (1/speed));
-     }
+     elm_transit_duration_set(pd->transit, pd->frame_duration * (1/pd->speed));
 
    return EINA_TRUE;
 }
@@ -469,7 +462,7 @@ _elm_animation_view_speed_get(const Eo *obj EINA_UNUSED, Elm_Animation_View_Data
 EOLIAN static double
 _elm_animation_view_duration_time_get(const Eo *obj EINA_UNUSED, Elm_Animation_View_Data *pd)
 {
-   return evas_object_vg_animated_frame_duration_get(pd->vg, 0, 0);
+   return pd->frame_duration;
 }
 
 EAPI Elm_Animation_View*
