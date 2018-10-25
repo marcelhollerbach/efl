@@ -118,7 +118,6 @@ _transit_del_cb(Elm_Transit_Effect *effect, Elm_Transit *transit)
    pd->state = ELM_ANIMATION_VIEW_STATE_STOP;
    pd->transit = NULL;
    pd->auto_play_pause = EINA_FALSE;
-   pd->manual_rewind = EINA_FALSE;
 
    if (prev_state != ELM_ANIMATION_VIEW_STATE_STOP)
      {
@@ -142,12 +141,7 @@ _transit_cb(Elm_Transit_Effect *effect, Elm_Transit *transit, double progress)
    if (pd->play_back)
      {
         pd->state = ELM_ANIMATION_VIEW_STATE_PLAY_BACK;
-
-        if (!pd->manual_rewind && (progress == 0))
-          pd->manual_rewind = EINA_TRUE;
-
-        if (pd->manual_rewind)
-          progress = 1 - progress;
+        progress = 1 - progress;
      }
    else pd->state = ELM_ANIMATION_VIEW_STATE_PLAY;
 
@@ -349,22 +343,19 @@ _elm_animation_view_play(Eo *obj EINA_UNUSED, Elm_Animation_View_Data *pd)
 {
    if (pd->state == ELM_ANIMATION_VIEW_STATE_PLAY) return EINA_FALSE;
 
+   Eina_Bool rewind = EINA_FALSE;
+   if (pd->state == ELM_ANIMATION_VIEW_STATE_PLAY_BACK) rewind = EINA_TRUE;
+
    pd->play_back = EINA_FALSE;
    pd->auto_play_pause = EINA_FALSE;
-
-   if (pd->state == ELM_ANIMATION_VIEW_STATE_PLAY_BACK && !pd->manual_rewind)
-     {
-        elm_transit_revert(pd->transit);
-        return EINA_TRUE;
-     }
-
-   pd->manual_rewind = EINA_FALSE;
 
    if (!pd->file) return EINA_FALSE;
    if (!pd->transit && !_ready_play(pd)) return EINA_FALSE;
 
    if (pd->state == ELM_ANIMATION_VIEW_STATE_STOP)
      _transit_go_facade(pd);
+   else if (rewind)
+     elm_transit_progress_value_set(pd->transit, pd->keyframe);
 
    return EINA_TRUE;
 }
@@ -432,16 +423,19 @@ _elm_animation_view_play_back(Eo *obj EINA_UNUSED, Elm_Animation_View_Data *pd)
 {
    if (pd->state == ELM_ANIMATION_VIEW_STATE_PLAY_BACK) return EINA_FALSE;
 
+   Eina_Bool rewind = EINA_FALSE;
+   if (pd->state == ELM_ANIMATION_VIEW_STATE_PLAY) rewind = EINA_TRUE;
+
    pd->play_back = EINA_TRUE;
+   pd->auto_play_pause = EINA_FALSE;
 
    if (!pd->file) return EINA_FALSE;
    if (!pd->transit && !_ready_play(pd)) return EINA_FALSE;
 
-   pd->auto_play_pause = EINA_FALSE;
-
    if (pd->state == ELM_ANIMATION_VIEW_STATE_STOP)
      _transit_go_facade(pd);
-   elm_transit_revert(pd->transit);
+   else if (rewind)
+     elm_transit_progress_value_set(pd->transit, 1 - pd->keyframe);
 
    return EINA_TRUE;
 }

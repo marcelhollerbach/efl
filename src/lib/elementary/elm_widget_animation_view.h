@@ -23,7 +23,6 @@ struct _Elm_Animation_View_Data
    Eina_Bool auto_play : 1;
    Eina_Bool auto_play_pause: 1;
    Eina_Bool auto_repeat : 1;
-   Eina_Bool manual_rewind : 1;
 };
 
 #define ELM_ANIMATION_VIEW_DATA_GET(o, sd) \
