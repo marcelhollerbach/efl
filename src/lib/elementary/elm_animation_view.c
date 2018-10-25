@@ -118,9 +118,13 @@ _transit_del_cb(Elm_Transit_Effect *effect, Elm_Transit *transit)
    pd->state = ELM_ANIMATION_VIEW_STATE_STOP;
    pd->transit = NULL;
    pd->auto_play_pause = EINA_FALSE;
+   pd->manual_rewind = EINA_FALSE;
 
    if (prev_state != ELM_ANIMATION_VIEW_STATE_STOP)
-     evas_object_smart_callback_call(pd->obj, SIG_PLAY_STOP, NULL);
+     {
+        evas_object_smart_callback_call(pd->obj, SIG_PLAY_STOP, NULL);
+        pd->keyframe = 0;
+     }
 }
 
 static void
@@ -135,7 +139,16 @@ _transit_cb(Elm_Transit_Effect *effect, Elm_Transit *transit, double progress)
         return;
      }
 
-   if (pd->play_back) pd->state = ELM_ANIMATION_VIEW_STATE_PLAY_BACK;
+   if (pd->play_back)
+     {
+        pd->state = ELM_ANIMATION_VIEW_STATE_PLAY_BACK;
+
+        if (!pd->manual_rewind && (progress == 0))
+          pd->manual_rewind = EINA_TRUE;
+
+        if (pd->manual_rewind)
+          progress = 1 - progress;
+     }
    else pd->state = ELM_ANIMATION_VIEW_STATE_PLAY;
 
    pd->keyframe = progress;
@@ -203,17 +216,11 @@ _ready_play(Elm_Animation_View_Data *pd)
    pd->auto_play_pause = EINA_FALSE;
    pd->state = ELM_ANIMATION_VIEW_STATE_STOP;
 
-   if (pd->transit)
-     {
-        if (pd->state != ELM_ANIMATION_VIEW_STATE_STOP)
-          evas_object_smart_callback_call(pd->obj, SIG_PLAY_STOP, NULL);
-        elm_transit_del(pd->transit);
-     }
+   if (pd->transit) elm_transit_del(pd->transit);
 
    pd->frame_cnt = (double) evas_object_vg_animated_frame_count_get(pd->vg);
    pd->frame_duration = evas_object_vg_animated_frame_duration_get(pd->vg, 0, 0);
    evas_object_vg_animated_frame_set(pd->vg, 0);
-   pd->keyframe = 0;
 
    if (pd->frame_duration > 0)
      {
@@ -222,8 +229,10 @@ _ready_play(Elm_Animation_View_Data *pd)
         if (pd->auto_repeat) elm_transit_repeat_times_set(transit, -1);
         elm_transit_duration_set(transit, pd->frame_duration * (1/pd->speed));
         elm_transit_effect_add(transit, _transit_cb, pd, _transit_del_cb);
+        elm_transit_progress_value_set(transit, pd->keyframe);
         elm_transit_objects_final_state_keep_set(transit, EINA_TRUE);
         pd->transit = transit;
+
         return EINA_TRUE;
      }
    return EINA_FALSE;
@@ -232,17 +241,15 @@ _ready_play(Elm_Animation_View_Data *pd)
 EOLIAN static Eina_Bool
 _elm_animation_view_efl_file_file_set(Eo *obj EINA_UNUSED, Elm_Animation_View_Data *pd, const char *file, const char *key)
 {
-   //TODO: Skip same file
-
    if (!evas_object_vg_file_set(pd->vg, file, key)) return EINA_FALSE;
 
    if (pd->file) eina_stringshare_del(pd->file);
    pd->file = eina_stringshare_add(file);
+   pd->keyframe = 0;
 
    if (!pd->file)
      {
         pd->state = ELM_ANIMATION_VIEW_STATE_NOT_READY;
-        pd->keyframe = 0;
         pd->frame_cnt = 0;
         pd->frame_duration = 0;
         if (pd->transit) elm_transit_del(pd->transit);
@@ -340,10 +347,21 @@ _elm_animation_view_auto_play_get(const Eo *obj EINA_UNUSED, Elm_Animation_View_
 EOLIAN static Eina_Bool
 _elm_animation_view_play(Eo *obj EINA_UNUSED, Elm_Animation_View_Data *pd)
 {
+   if (pd->state == ELM_ANIMATION_VIEW_STATE_PLAY) return EINA_FALSE;
+
    pd->play_back = EINA_FALSE;
+   pd->auto_play_pause = EINA_FALSE;
+
+   if (pd->state == ELM_ANIMATION_VIEW_STATE_PLAY_BACK && !pd->manual_rewind)
+     {
+        elm_transit_revert(pd->transit);
+        return EINA_TRUE;
+     }
+
+   pd->manual_rewind = EINA_FALSE;
 
    if (!pd->file) return EINA_FALSE;
-   if (!pd->transit) if (!_ready_play(pd)) return EINA_FALSE;
+   if (!pd->transit && !_ready_play(pd)) return EINA_FALSE;
 
    if (pd->state == ELM_ANIMATION_VIEW_STATE_STOP)
      _transit_go_facade(pd);
@@ -412,6 +430,8 @@ _elm_animation_view_resume(Eo *obj EINA_UNUSED, Elm_Animation_View_Data *pd)
 EOLIAN static Eina_Bool
 _elm_animation_view_play_back(Eo *obj EINA_UNUSED, Elm_Animation_View_Data *pd)
 {
+   if (pd->state == ELM_ANIMATION_VIEW_STATE_PLAY_BACK) return EINA_FALSE;
+
    pd->play_back = EINA_TRUE;
 
    if (!pd->file) return EINA_FALSE;
@@ -419,12 +439,9 @@ _elm_animation_view_play_back(Eo *obj EINA_UNUSED, Elm_Animation_View_Data *pd)
 
    pd->auto_play_pause = EINA_FALSE;
 
-   if (pd->transit)
-     {
-        if (pd->state == ELM_ANIMATION_VIEW_STATE_STOP)
-          _transit_go_facade(pd);
-        elm_transit_revert(pd->transit);
-     }
+   if (pd->state == ELM_ANIMATION_VIEW_STATE_STOP)
+     _transit_go_facade(pd);
+   elm_transit_revert(pd->transit);
 
    return EINA_TRUE;
 }
@@ -444,7 +461,17 @@ _elm_animation_view_speed_set(Eo *obj EINA_UNUSED, Elm_Animation_View_Data *pd, 
 EOLIAN static void
 _elm_animation_view_keyframe_set(Eo *obj EINA_UNUSED, Elm_Animation_View_Data *pd, double keyframe)
 {
-   evas_object_vg_animated_frame_set(pd->vg, keyframe);
+   if (keyframe < 0) keyframe = 0;
+   else if (keyframe > 1) keyframe = 1;
+   if (pd->keyframe == keyframe) return;
+
+   pd->keyframe = keyframe;
+
+   if (pd->frame_cnt > 0)
+     evas_object_vg_animated_frame_set(pd->vg, (int) (pd->frame_cnt * keyframe));
+
+   if (pd->transit)
+     elm_transit_progress_value_set(pd->transit, keyframe);
 }
 
 EOLIAN static double
