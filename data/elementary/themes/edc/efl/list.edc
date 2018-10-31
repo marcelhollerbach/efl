@@ -6,6 +6,91 @@ group { "efl/list_view";
    inherit: "efl/list";
 }
 
+group { "efl/tree_view";
+   inherit: "efl/list";
+}
+
+group { name: "efl/view_list/item/cover";
+   parts {
+      part { name: "base"; type: RECT; mouse_events: 0;
+         description { state: "default" 0.0;
+            color: 0 0 0 0;
+         }
+      }
+      part { name: "efl.content"; type: SWALLOW;
+         description { state: "default" 0.0;
+            fixed: 1 0;
+            align: 0.5 0.5;
+            aspect: 1.0 1.0;
+//            rel1.relative: 0.1 0.1;
+//            rel2.relative: 0.9 0.9;
+         }
+         description { state: "highlighted" 0.0;
+            inherit: "default" 0.0;
+            rel1.relative: -0.1 -0.1;
+            rel2.relative: 1.1 1.1;
+         }
+      }
+      part { name: "efl.text"; type: TEXT; mouse_events: 0;
+         effect: SHADOW BOTTOM;
+         scale: 1;
+         description { state: "default" 0.0;
+            fixed: 1 1;
+            rel1.offset: 10 -1;
+            rel1.relative: 0.0 0.8;
+            rel2.offset: -5 -5;
+            rel2.relative: 1.0 1.0;
+            color_class: "list_item";
+            color: FN_COL_DEFAULT;
+            text { font: FN; size: 10;
+               min: 1 1;
+               ellipsis: -1;
+               text_class: "list_item";
+            }
+            visible: 0;
+         }
+         description { state: "highlighted" 0.0;
+            inherit: "default" 0.0;
+            visible: 1;
+         }
+      }
+      part { name: "label2"; type: TEXT; mouse_events: 0;
+         effect: SHADOW BOTTOM;
+         scale: 1;
+         description { state: "default" 0.0;
+            rel1.to_y: "efl.text";
+            rel1.relative: 1.0 0.8;
+            rel2.relative: 1.0 1.0;
+            color_class: "list_item_selected";
+            color: FN_COL_HIGHLIGHT;
+            text { font: FN; size: 10;
+               text_source: "efl.text";
+               align: 0.0 0.5;
+               text_class: "list_item";
+            }
+            visible: 0;
+         }
+         description { state: "highlighted" 0.0;
+            inherit: "default" 0.0;
+            visible: 1;
+         }
+      }
+      program {
+         signal: "efl,state,highlighted"; source: "efl";
+         action: STATE_SET "highlighted" 0.0;
+         transition: SINUSOIDAL 0.4;
+         target: "efl.content";
+         target: "efl.text";
+      }
+      program {
+         signal: "efl,state,unhighlighted"; source: "efl";
+         action: STATE_SET "default" 0.0;
+         target: "efl.content";
+         target: "efl.text";
+      }
+   }
+}
+
 group { "efl/list_item";
    data.item: "selectraise" "on";
    data.item: "focusraise" "on";

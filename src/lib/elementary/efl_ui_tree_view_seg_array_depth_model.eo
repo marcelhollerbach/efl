@@ -1,0 +1,10 @@
+import efl_ui_tree_view_model;
+
+class Efl.Ui.Tree_View_Seg_Array_Depth_Model (Efl.Model_Composite)
+{
+   implements {
+      Efl.Object.constructor;
+      Efl.Object.destructor;
+      Efl.Model.children_slice_get;
+   }
+}
