@@ -465,7 +465,12 @@ _elm_animation_view_keyframe_set(Eo *obj EINA_UNUSED, Elm_Animation_View_Data *p
      evas_object_vg_animated_frame_set(pd->vg, (int) (pd->frame_cnt * keyframe));
 
    if (pd->transit)
-     elm_transit_progress_value_set(pd->transit, keyframe);
+     {
+        if (pd->play_back)
+          elm_transit_progress_value_set(pd->transit, 1 - keyframe);
+        else
+          elm_transit_progress_value_set(pd->transit, keyframe);
+     }
 }
 
 EOLIAN static double
