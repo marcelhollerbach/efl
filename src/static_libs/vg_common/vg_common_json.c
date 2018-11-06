@@ -18,7 +18,9 @@ vg_common_json_create_vg_node(Vg_File_Data *vfd)
    Efl_VG *root = vfd->root;
    if (!root) return EINA_FALSE;
 
-   lottie_animation_prepare_frame(lot_anim, vfd->anim_data->frame_num, vfd->view_box.w, vfd->view_box.h);
+   unsigned int frame_num = (vfd->anim_data) ? vfd->anim_data->frame_num : 0;
+
+   lottie_animation_prepare_frame(lot_anim, frame_num, vfd->view_box.w, vfd->view_box.h);
    int size = lottie_animation_get_node_count(lot_anim);
 
    //ERR("data json vfd = %p, lot_anim = %p, size = %d, root(%p) viewbox(%d %d %d %d) progress(%f)", vfd, lot_anim, size, root, vfd->view_box.x, vfd->view_box.y, vfd->view_box.w, vfd->view_box.h, progress);
