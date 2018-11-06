@@ -396,23 +396,14 @@ _efl_canvas_vg_efl_file_file_get(const Eo *obj EINA_UNUSED, Efl_Canvas_Vg_Data *
 EOLIAN static Eina_Bool
 _efl_canvas_vg_efl_file_save(const Eo *obj, Efl_Canvas_Vg_Data *pd, const char *file, const char *key, const char *flags)
 {
-   Vg_File_Data tmp = {};
-   Vg_File_Data *vfd = &tmp;
-
    if (pd->vg_entry)
-     {
-        //TODO: Necessary file open?
-        vfd = evas_cache_vg_file_open(pd->vg_entry->file, pd->vg_entry->key, EINA_FALSE);
-     }
+     evas_cache_vg_entry_file_save(pd->vg_entry, file, key, flags);
    else
      {
-        vfd->view_box.x = 0;
-        vfd->view_box.y = 0;
-        evas_object_geometry_get(obj, NULL, NULL, &vfd->view_box.w, &vfd->view_box.h);
-        vfd->root = pd->root;
-        vfd->preserve_aspect = EINA_FALSE;
+        Evas_Coord w, h;
+        evas_object_geometry_get(obj, NULL, NULL, &w, &h);
+        evas_cache_vg_file_save(pd->root, w, h, file, key, flags);
      }
-   return evas_cache_vg_file_save(vfd, file, key, flags);
 }
 
 static void

@@ -169,6 +169,47 @@ _evas_cache_vg_entry_free_cb(void *data)
    free(vg_entry);
 }
 
+static Eina_Bool
+_vg_file_save(Vg_File_Data *vfd, const char *file, const char *key, const char *flags)
+{
+   Evas_Module       *em;
+   Evas_Vg_Save_Func *saver;
+   int                error = EVAS_LOAD_ERROR_GENERIC;
+   int                compress = 9;
+
+   if (!file) return EINA_FALSE;
+
+   if (flags)
+     {
+        char *p, *pp;
+        char *tflags;
+
+        tflags = alloca(strlen(flags) + 1);
+        strcpy(tflags, flags);
+        p = tflags;
+        while (p)
+          {
+             pp = strchr(p, ' ');
+             if (pp) *pp = 0;
+             sscanf(p, "compress=%i", &compress);
+             if (pp) p = pp + 1;
+             else break;
+          }
+     }
+
+   em = _find_saver_module(file);
+   if (em)
+     {
+        saver = em->functions;
+        error = saver->file_save(vfd, file, key, compress);
+     }
+
+   if (error)
+     return EINA_FALSE;
+
+   return EINA_TRUE;
+}
+
 void
 evas_cache_vg_init(void)
 {
@@ -368,44 +409,29 @@ evas_cache_vg_entry_del(Vg_Cache_Entry *vg_entry)
 }
 
 Eina_Bool
-evas_cache_vg_file_save(Vg_File_Data *vfd, const char *file, const char *key, const char *flags)
+evas_cache_vg_entry_file_save(Vg_Cache_Entry *vg_entry, const char *file, const char *key,
+                              const char *flags)
 {
-   Evas_Module       *em;
-   Evas_Vg_Save_Func *saver;
-   int                error = EVAS_LOAD_ERROR_GENERIC;
-   int                compress = 9;
+   Vg_File_Data *vfd =
+      evas_cache_vg_file_open(vg_entry->file, vg_entry->key, EINA_FALSE);
 
-   if (!file) return EINA_FALSE;
+   if (!vfd) return EINA_FALSE;
 
-   if (flags)
-     {
-        char *p, *pp;
-        char *tflags;
-
-        tflags = alloca(strlen(flags) + 1);
-        strcpy(tflags, flags);
-        p = tflags;
-        while (p)
-          {
-             pp = strchr(p, ' ');
-             if (pp) *pp = 0;
-             sscanf(p, "compress=%i", &compress);
-             if (pp) p = pp + 1;
-             else break;
-          }
-     }
-
-   em = _find_saver_module(file);
-   if (em)
-     {
-        saver = em->functions;
-        error = saver->file_save(vfd, file, key, compress);
-     }
-
-   if (error)
-     return EINA_FALSE;
-
-   return EINA_TRUE;
+   return _vg_file_save(vfd, file, key, flags);
 }
 
+Eina_Bool
+evas_cache_vg_file_save(Efl_VG *root, int w, int h, const char *file, const char *key,
+                        const char *flags)
+{
+   Vg_File_Data vfd = {};
 
+   if (!root) return EINA_FALSE;
+
+   vfd.view_box.x = w;
+   vfd.view_box.y = h;
+   vfd.root = root;
+   vfd.preserve_aspect = EINA_FALSE;
+
+   return _vg_file_save(&vfd, file, key, flags);
+}
