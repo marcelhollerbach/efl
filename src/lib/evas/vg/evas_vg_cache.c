@@ -164,7 +164,9 @@ _evas_cache_vg_entry_free_cb(void *data)
 
    eina_stringshare_del(vg_entry->key);
    free(vg_entry->hash_key);
-   efl_unref(vg_entry->root);
+   efl_unref(vg_entry->root[0]);
+   efl_unref(vg_entry->root[1]);
+   efl_unref(vg_entry->root[2]);
    free(vg_entry);
 }
 
@@ -209,6 +211,90 @@ _vg_file_save(Vg_File_Data *vfd, const char *file, const char *key, const char *
    return EINA_TRUE;
 }
 
+static Efl_VG*
+_cached_root_get(Vg_Cache_Entry *vg_entry, unsigned int frame_num)
+{
+   Vg_File_Data *vfd = vg_entry->vfd;
+
+   if (vfd->static_viewbox || ((vfd->view_box.w == vg_entry->w) && (vfd->view_box.h == vg_entry->h)))
+     {
+        //Case 1: Animatable
+        if (vfd->anim_data)
+          {
+             //Start frame
+             if (vg_entry->root[1] && frame_num == 0)
+               {
+                  return vg_entry->root[1];
+               }
+             else if (vg_entry->root[2] && (frame_num == (vfd->anim_data->frame_cnt - 1)))
+               {
+                  return vg_entry->root[2];
+               }
+          }
+        //Case 2: Static
+        else
+          {
+             if (vg_entry->root[0])
+               return vg_entry->root[0];
+          }
+     }
+   return NULL;
+}
+
+static void
+_caching_root_update(Vg_Cache_Entry *vg_entry)
+{
+   Vg_File_Data *vfd = vg_entry->vfd;
+
+   if (vg_entry->root[0]) efl_unref(vg_entry->root[0]);
+   vg_entry->root[0] = efl_ref(vfd->root);
+
+   //Animatable?
+   if (!vfd->anim_data) return;
+
+   //Start frame
+   if (vfd->anim_data->frame_num == 0)
+     {
+        if (vg_entry->root[1]) efl_unref(vg_entry->root[1]);
+        vg_entry->root[1] = efl_ref(vfd->root);
+     }
+   else if (vfd->anim_data->frame_num == (vfd->anim_data->frame_cnt - 1))
+     {
+        if (vg_entry->root[2]) efl_unref(vg_entry->root[2]);
+        vg_entry->root[2] = efl_ref(vfd->root);
+     }
+}
+
+static void
+_local_transform(Efl_VG *root, double w, double h, Vg_File_Data *vfd)
+{
+   double sx = 0, sy= 0, scale;
+   Eina_Matrix3 m;
+
+   if (!vfd->static_viewbox) return;
+   if (vfd->view_box.w == w && vfd->view_box.h == h) return;
+
+   sx = w / vfd->view_box.w;
+   sy = h / vfd->view_box.h;
+
+   scale = sx < sy ? sx : sy;
+   eina_matrix3_identity(&m);
+
+   // align hcenter and vcenter
+   if (vfd->preserve_aspect)
+     {
+        eina_matrix3_translate(&m, (w - vfd->view_box.w * scale)/2.0, (h - vfd->view_box.h * scale)/2.0);
+        eina_matrix3_scale(&m, scale, scale);
+        eina_matrix3_translate(&m, -vfd->view_box.x, -vfd->view_box.y);
+     }
+   else
+     {
+        eina_matrix3_scale(&m, sx, sy);
+        eina_matrix3_translate(&m, -vfd->view_box.x, -vfd->view_box.y);
+     }
+   efl_canvas_vg_node_transformation_set(root, &m);
+}
+
 void
 evas_cache_vg_init(void)
 {
@@ -239,36 +325,6 @@ evas_cache_vg_shutdown(void)
    eina_hash_free(vg_cache->vg_entry_hash);
    free(vg_cache);
    vg_cache = NULL;
-}
-
-static void
-_local_transform(Efl_VG *root, double w, double h, Vg_File_Data *vfd)
-{
-   double sx = 0, sy= 0, scale;
-   Eina_Matrix3 m;
-
-   if (!vfd->static_viewbox) return;
-   if (vfd->view_box.w == w && vfd->view_box.h == h) return;
-
-   sx = w / vfd->view_box.w;
-   sy = h / vfd->view_box.h;
-
-   scale = sx < sy ? sx : sy;
-   eina_matrix3_identity(&m);
-
-   // allign hcenter and vcenter
-   if (vfd->preserve_aspect)
-     {
-        eina_matrix3_translate(&m, (w - vfd->view_box.w * scale)/2.0, (h - vfd->view_box.h * scale)/2.0);
-        eina_matrix3_scale(&m, scale, scale);
-        eina_matrix3_translate(&m, -vfd->view_box.x, -vfd->view_box.y);
-     }
-   else
-     {
-        eina_matrix3_scale(&m, sx, sy);
-        eina_matrix3_translate(&m, -vfd->view_box.x, -vfd->view_box.y);
-     }
-   efl_canvas_vg_node_transformation_set(root, &m);
 }
 
 Vg_File_Data *
@@ -354,8 +410,9 @@ evas_cache_vg_anim_duration_get(const Vg_Cache_Entry* vg_entry)
 unsigned int
 evas_cache_vg_anim_frame_count_get(const Vg_Cache_Entry* vg_entry)
 {
-   if (!vg_entry->vfd->anim_data) return 0;
-   return vg_entry->vfd->anim_data->frame_cnt;
+   Vg_File_Data *vfd = vg_entry->vfd;
+   if (!vfd || !vfd->anim_data) return 0;
+   return vfd->anim_data->frame_cnt;
 }
 
 Efl_VG*
@@ -367,17 +424,8 @@ evas_cache_vg_tree_get(Vg_Cache_Entry *vg_entry, unsigned int frame_num)
    Vg_File_Data *vfd = vg_entry->vfd;
    if (!vfd) return NULL;
 
-   //Hit Caching?
-   if (vg_entry->root)
-     {
-        if (!vfd->anim_data || (frame_num == vfd->anim_data->frame_num))
-          {
-             if (vfd->static_viewbox ||
-                 ((vfd->view_box.w == vg_entry->w) &&
-                  (vfd->view_box.h == vg_entry->h)))
-                 return vg_entry->root;
-          }
-     }
+   Efl_VG *root = _cached_root_get(vg_entry, frame_num);
+   if (root) return root;
 
    if (!vfd->static_viewbox)
      {
@@ -389,12 +437,11 @@ evas_cache_vg_tree_get(Vg_Cache_Entry *vg_entry, unsigned int frame_num)
 
    if (!vfd->loader->file_data(vfd)) return NULL;
 
-   if (vg_entry->root) efl_unref(vg_entry->root);
-   vg_entry->root = efl_ref(vfd->root);
+   _caching_root_update(vg_entry);
 
-   _local_transform(vg_entry->root, vg_entry->w, vg_entry->h, vfd);
+   _local_transform(vg_entry->root[0], vg_entry->w, vg_entry->h, vfd);
 
-   return vg_entry->root;
+   return vg_entry->root[0];
 }
 
 void
