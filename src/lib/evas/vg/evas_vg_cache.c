@@ -350,7 +350,7 @@ evas_cache_vg_tree_get(Vg_Cache_Entry *vg_entry, unsigned int frame_num)
    if (!vfd->loader->file_data(vfd)) return NULL;
 
    if (vg_entry->root) efl_unref(vg_entry->root);
-   vg_entry->root = efl_duplicate(vfd->root);
+   vg_entry->root = efl_ref(vfd->root);
 
    _local_transform(vg_entry->root, vg_entry->w, vg_entry->h, vfd);
 
