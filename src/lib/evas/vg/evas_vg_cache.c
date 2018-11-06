@@ -202,28 +202,31 @@ evas_cache_vg_shutdown(void)
 }
 
 static void
-_apply_transformation(Efl_VG *root, double w, double h, Vg_File_Data *vg_data)
+_local_transform(Efl_VG *root, double w, double h, Vg_File_Data *vfd)
 {
    double sx = 0, sy= 0, scale;
    Eina_Matrix3 m;
 
-   if (vg_data->view_box.w)
-     sx = w/vg_data->view_box.w;
-   if (vg_data->view_box.h)
-     sy = h/vg_data->view_box.h;
-   scale = sx < sy ? sx: sy;
+   if (!vfd->static_viewbox) return;
+   if (vfd->view_box.w == w && vfd->view_box.h == h) return;
+
+   sx = w / vfd->view_box.w;
+   sy = h / vfd->view_box.h;
+
+   scale = sx < sy ? sx : sy;
    eina_matrix3_identity(&m);
+
    // allign hcenter and vcenter
-   if (vg_data->preserve_aspect)
+   if (vfd->preserve_aspect)
      {
-        eina_matrix3_translate(&m, (w - vg_data->view_box.w * scale)/2.0, (h - vg_data->view_box.h * scale)/2.0);
+        eina_matrix3_translate(&m, (w - vfd->view_box.w * scale)/2.0, (h - vfd->view_box.h * scale)/2.0);
         eina_matrix3_scale(&m, scale, scale);
-        eina_matrix3_translate(&m, -vg_data->view_box.x, -vg_data->view_box.y);
+        eina_matrix3_translate(&m, -vfd->view_box.x, -vfd->view_box.y);
      }
    else
      {
         eina_matrix3_scale(&m, sx, sy);
-        eina_matrix3_translate(&m, -vg_data->view_box.x, -vg_data->view_box.y);
+        eina_matrix3_translate(&m, -vfd->view_box.x, -vfd->view_box.y);
      }
    efl_canvas_vg_node_transformation_set(root, &m);
 }
@@ -348,7 +351,8 @@ evas_cache_vg_tree_get(Vg_Cache_Entry *vg_entry, unsigned int frame_num)
 
    if (vg_entry->root) efl_unref(vg_entry->root);
    vg_entry->root = efl_duplicate(vfd->root);
-   _apply_transformation(vg_entry->root, vg_entry->w, vg_entry->h, vfd);
+
+   _local_transform(vg_entry->root, vg_entry->w, vg_entry->h, vfd);
 
    return vg_entry->root;
 }
