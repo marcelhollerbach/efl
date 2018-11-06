@@ -21,6 +21,7 @@ evas_vg_load_file_close_json(Vg_File_Data *vfd)
    Lottie_Animation *lot_anim = (Lottie_Animation *) vfd->loader_data;
    lottie_animation_destroy(lot_anim);
    if (vfd->anim_data) free(vfd->anim_data);
+   if (vfd->root) efl_unref(vfd->root);
    free(vfd);
 
    return EINA_TRUE;

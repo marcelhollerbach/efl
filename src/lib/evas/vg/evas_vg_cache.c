@@ -139,7 +139,6 @@ static void
 _evas_cache_vg_data_free_cb(void *data)
 {
    Vg_File_Data *vfd = data;
-   efl_unref(vfd->root);
    vfd->loader->file_close(vfd);
 }
 

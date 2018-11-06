@@ -2332,8 +2332,9 @@ evas_vg_load_file_data_svg(Vg_File_Data *vfd EINA_UNUSED)
 }
 
 static Eina_Bool
-evas_vg_load_file_close_svg(Vg_File_Data *vfd EINA_UNUSED)
+evas_vg_load_file_close_svg(Vg_File_Data *vfd)
 {
+   if (vfd->root) efl_unref(vfd->root);
    return EINA_TRUE;
 }
 
