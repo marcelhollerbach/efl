@@ -122,11 +122,24 @@ _evas_vg_resize(void *data, const Efl_Event *ev)
 }
 
 EOLIAN static Efl_VG *
-_efl_canvas_vg_root_node_get(const Eo *obj EINA_UNUSED, Efl_Canvas_Vg_Data *pd)
+_efl_canvas_vg_root_node_get(const Eo *obj, Efl_Canvas_Vg_Data *pd)
 {
    Efl_VG *root;
 
-   if (pd->vg_entry) root = evas_cache_vg_tree_get(pd->vg_entry, pd->frame_index);
+   if (pd->vg_entry)
+     {
+        Evas_Coord w, h;
+        evas_object_geometry_get(obj, NULL, NULL, &w, &h);
+
+        //Update vg data with current size.
+        if ((pd->vg_entry->w != w) || (pd->vg_entry->h != h))
+          {
+             Vg_Cache_Entry *vg_entry = evas_cache_vg_entry_resize(pd->vg_entry, w, h);
+             evas_cache_vg_entry_del(pd->vg_entry);
+             pd->vg_entry = vg_entry;
+          }
+        root = evas_cache_vg_tree_get(pd->vg_entry, pd->frame_index);
+     }
    else if (pd->user_entry) root = pd->user_entry->root;
    else root = pd->root;
 
@@ -176,14 +189,13 @@ _efl_canvas_vg_root_node_set(Eo *obj, Efl_Canvas_Vg_Data *pd, Efl_VG *root_node)
         // drop any surface cache attached to it.
         Evas_Object_Protected_Data *eobj = efl_data_scope_get(obj, EFL_CANVAS_OBJECT_CLASS);
         eobj->layer->evas->engine.func->ector_surface_cache_drop(_evas_engine_context(eobj->layer->evas),
-                                                                 pd->cache_key);
+                                                                 pd->user_entry->root);
         free(pd->user_entry);
         pd->user_entry = NULL;
      }
 
    // force a redraw
    pd->changed = EINA_TRUE;
-   pd->cache_key = NULL;
    evas_object_change(obj, efl_data_scope_get(obj, EFL_CANVAS_OBJECT_CLASS));
 }
 
@@ -271,7 +283,6 @@ _vg_file_mmap_set(Eo *eo_obj, Efl_Canvas_Vg_Data *pd, const Eina_File *file, con
    else
      pd->vg_entry = NULL;
 
-   pd->cache_key = NULL;
    evas_object_change(eo_obj, obj);
    evas_cache_vg_entry_del(old_entry);
 
@@ -510,8 +521,7 @@ _evas_vg_render(Evas_Object_Protected_Data *obj, Efl_Canvas_Vg_Data *pd,
      }
 }
 
-// renders a vg_tree to an offscreen buffer
-// and push it to the cache.
+//renders a vg_tree to an offscreen buffer and push it to the cache.
 static void *
 _render_to_buffer(Evas_Object_Protected_Data *obj, Efl_Canvas_Vg_Data *pd,
                   void *engine, void *surface,
@@ -526,20 +536,19 @@ _render_to_buffer(Evas_Object_Protected_Data *obj, Efl_Canvas_Vg_Data *pd,
    ector = evas_ector_get(obj->layer->evas);
    if (!ector) return NULL;
 
+   //create a buffer
    if (!buffer)
      {
-        // 2. create a buffer
         buffer = obj->layer->evas->engine.func->ector_surface_create(engine,
                                                                      w, h,
                                                                      &error);
-        if (error) return NULL; // surface creation error
+        if (error) return NULL;
         buffer_created = EINA_TRUE;
      }
 
-   //1. render pre
    _evas_vg_render_pre(root, ector, NULL);
 
-   //3. draw into the buffer
+   //initialize buffer
    context = evas_common_draw_context_new();
    evas_common_draw_context_set_render_op(context, _EVAS_RENDER_COPY);
    evas_common_draw_context_set_color(context, 255, 255, 255, 255);
@@ -548,6 +557,7 @@ _render_to_buffer(Evas_Object_Protected_Data *obj, Efl_Canvas_Vg_Data *pd,
                                               ector,
                                               0, 0,
                                               do_async);
+   //draw on buffer
    _evas_vg_render(obj, pd,
                    engine, buffer,
                    context, surface,
@@ -561,10 +571,12 @@ _render_to_buffer(Evas_Object_Protected_Data *obj, Efl_Canvas_Vg_Data *pd,
 
    evas_common_draw_context_free(context);
 
+   //caching buffer only for first and last frames.
    if (buffer_created)
      {
-        pd->cache_key = key;
-        obj->layer->evas->engine.func->ector_surface_cache_set(engine, key, buffer);
+        if (pd->frame_index == 0 ||
+            (pd->frame_index == (int) evas_cache_vg_anim_frame_count_get(pd->vg_entry) - 1))
+          obj->layer->evas->engine.func->ector_surface_cache_set(engine, key, buffer);
      }
 
    return buffer;
@@ -600,35 +612,26 @@ _cache_vg_entry_render(Evas_Object_Protected_Data *obj,
 {
    Vg_Cache_Entry *vg_entry = pd->vg_entry;
    Efl_VG *root;
-   void *buffer;
 
    // if the size changed in between path set and the draw call;
+
    if ((vg_entry->w != w) ||
        (vg_entry->h != h))
      {
          vg_entry = evas_cache_vg_entry_resize(vg_entry, w, h);
          evas_cache_vg_entry_del(pd->vg_entry);
          pd->vg_entry = vg_entry;
-         pd->cache_key = NULL;
      }
    root = evas_cache_vg_tree_get(vg_entry, pd->frame_index);
    if (!root) return;
-   buffer = obj->layer->evas->engine.func->ector_surface_cache_get(engine, pd->cache_key);
 
-   // if the buffer is not created yet
+   void *buffer = obj->layer->evas->engine.func->ector_surface_cache_get(engine, root);
+
    if (!buffer)
-     {
-        // render to the buffer
-        buffer = _render_to_buffer(obj, pd,
-                                   engine, surface,
-                                   root,
-                                   w, h,
-                                   root,
-                                   buffer,
-                                   do_async);
-     }
+     buffer = _render_to_buffer(obj, pd, engine, surface, root, w, h, root, NULL, do_async);
    else
-     obj->layer->evas->engine.func->ector_surface_cache_drop(engine, pd->cache_key);
+     //cache reference was increased when we get the cache.
+     obj->layer->evas->engine.func->ector_surface_cache_drop(engine, root);
 
    _render_buffer_to_screen(obj,
                             engine, output, context, surface,
@@ -644,20 +647,19 @@ _user_vg_entry_render(Evas_Object_Protected_Data *obj,
                       int x, int y, int w, int h, Eina_Bool do_async)
 {
    Vg_User_Entry *user_entry = pd->user_entry;
-   void *buffer;
 
-   //if the size dosen't match
+   //if the size doesn't match, drop previous cache surface.
    if ((user_entry->w != w ) ||
        (user_entry->h != h))
      {
-         obj->layer->evas->engine.func->ector_surface_cache_drop(engine, user_entry);
+         obj->layer->evas->engine.func->ector_surface_cache_drop(engine, user_entry->root);
          user_entry->w = w;
          user_entry->h = h;
-         pd->user_entry = user_entry;
      }
 
    //if the buffer is not created yet
-   buffer = obj->layer->evas->engine.func->ector_surface_cache_get(engine, pd->cache_key);
+   void *buffer = obj->layer->evas->engine.func->ector_surface_cache_get(engine, user_entry->root);
+
    if (!buffer)
      {
         // render to the buffer
@@ -680,7 +682,8 @@ _user_vg_entry_render(Evas_Object_Protected_Data *obj,
                                      user_entry,
                                      buffer,
                                      do_async);
-        obj->layer->evas->engine.func->ector_surface_cache_drop(engine, pd->cache_key);
+        //cache reference was increased when we get the cache.
+        obj->layer->evas->engine.func->ector_surface_cache_drop(engine, user_entry->root);
      }
 
    _render_buffer_to_screen(obj,
@@ -955,7 +958,6 @@ _efl_canvas_vg_efl_gfx_image_animation_controller_animated_frame_set(Eo *eo_obj,
    if (pd->frame_index == frame_index) return EINA_TRUE;
 
    //Image is changed, drop previous cached image.
-   pd->cache_key = NULL;
    pd->frame_index = frame_index;
    pd->changed = EINA_TRUE;
    evas_object_change(eo_obj, efl_data_scope_get(eo_obj, EFL_CANVAS_OBJECT_CLASS));

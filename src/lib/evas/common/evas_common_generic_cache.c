@@ -48,6 +48,7 @@ generic_cache_data_set(Generic_Cache *cache, void *key, void *surface)
    eina_hash_add(cache->hash, &key, entry);
    cache->lru_list = eina_list_prepend(cache->lru_list, entry);
    count = eina_list_count(cache->lru_list);
+
    if (count > LRU_CACHE_LIMIT)
    {
       entry = eina_list_data_get(eina_list_last(cache->lru_list));

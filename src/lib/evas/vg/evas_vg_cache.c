@@ -216,28 +216,26 @@ _cached_root_get(Vg_Cache_Entry *vg_entry, unsigned int frame_num)
 {
    Vg_File_Data *vfd = vg_entry->vfd;
 
-   if (vfd->static_viewbox || ((vfd->view_box.w == vg_entry->w) && (vfd->view_box.h == vg_entry->h)))
+   //Case 1: Animatable
+   if (vfd->anim_data)
      {
-        //Case 1: Animatable
-        if (vfd->anim_data)
+        //Start frame
+        if (vg_entry->root[1] && frame_num == 0)
           {
-             //Start frame
-             if (vg_entry->root[1] && frame_num == 0)
-               {
-                  return vg_entry->root[1];
-               }
-             else if (vg_entry->root[2] && (frame_num == (vfd->anim_data->frame_cnt - 1)))
-               {
-                  return vg_entry->root[2];
-               }
+             return vg_entry->root[1];
           }
-        //Case 2: Static
-        else
+        else if (vg_entry->root[2] && (frame_num == (vfd->anim_data->frame_cnt - 1)))
           {
-             if (vg_entry->root[0])
-               return vg_entry->root[0];
+             return vg_entry->root[2];
           }
      }
+   //Case 2: Static
+   else
+     {
+        if (vg_entry->root[0])
+          return vg_entry->root[0];
+     }
+
    return NULL;
 }
 
@@ -246,8 +244,22 @@ _caching_root_update(Vg_Cache_Entry *vg_entry)
 {
    Vg_File_Data *vfd = vg_entry->vfd;
 
-   if (vg_entry->root[0]) efl_unref(vg_entry->root[0]);
-   vg_entry->root[0] = efl_ref(vfd->root);
+   /* Optimization: static viewbox may have same root data regardless of size.
+      So we can't use the root data directly, but copy it for each vg_entries.
+      In the meantime, non-static viewbox root data may have difference instance for each
+      size. So it's affordable to share the root data for each vg_entries. */
+   if (vfd->static_viewbox)
+     {
+        /* TODO: Yet trivial but still we may have a better solution to
+           avoid this unnecessary copy. If the ector surface key is not
+           to this root pointer. */
+        vg_entry->root[0] = efl_duplicate(vfd->root);
+     }
+   else if (vg_entry->root[0] != vfd->root)
+     {
+        if (vg_entry->root[0]) efl_unref(vg_entry->root[0]);
+        vg_entry->root[0] = efl_ref(vfd->root);
+     }
 
    //Animatable?
    if (!vfd->anim_data) return;
@@ -255,13 +267,20 @@ _caching_root_update(Vg_Cache_Entry *vg_entry)
    //Start frame
    if (vfd->anim_data->frame_num == 0)
      {
-        if (vg_entry->root[1]) efl_unref(vg_entry->root[1]);
-        vg_entry->root[1] = efl_ref(vfd->root);
+        if (vg_entry->root[1] != vfd->root)
+          {
+             if (vg_entry->root[1]) efl_unref(vg_entry->root[1]);
+             vg_entry->root[1] = efl_ref(vfd->root);
+          }
      }
+   //End frame
    else if (vfd->anim_data->frame_num == (vfd->anim_data->frame_cnt - 1))
      {
-        if (vg_entry->root[2]) efl_unref(vg_entry->root[2]);
-        vg_entry->root[2] = efl_ref(vfd->root);
+        if (vg_entry->root[2] != vfd->root)
+          {
+             if (vg_entry->root[2]) efl_unref(vg_entry->root[2]);
+             vg_entry->root[2] = efl_ref(vfd->root);
+          }
      }
 }
 
@@ -410,6 +429,7 @@ evas_cache_vg_anim_duration_get(const Vg_Cache_Entry* vg_entry)
 unsigned int
 evas_cache_vg_anim_frame_count_get(const Vg_Cache_Entry* vg_entry)
 {
+   if (!vg_entry) return 0;
    Vg_File_Data *vfd = vg_entry->vfd;
    if (!vfd || !vfd->anim_data) return 0;
    return vfd->anim_data->frame_cnt;
