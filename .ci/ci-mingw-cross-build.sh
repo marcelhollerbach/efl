@@ -11,6 +11,8 @@ export LDFLAGS="-L$PREFIX/lib/"
 export PKG_CONFIG_PATH=$PREFIX/lib/pkgconfig/
 
 cd /ewpi/
+git reset --hard
+git pull
 gcc -std=c99 -o ewpi ewpi.c ewpi_map.c
 #sed -i -e 's/installed: yes/installed: no/g' packages/dbus/dbus.ewpi
 #sed -i -e 's/installed: yes/installed: no/g' packages/libtiff/libtiff.ewpi
