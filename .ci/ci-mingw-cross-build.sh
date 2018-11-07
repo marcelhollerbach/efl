@@ -14,8 +14,8 @@ cd /ewpi/
 gcc -std=c99 -o ewpi ewpi.c ewpi_map.c
 #sed -i -e 's/installed: yes/installed: no/g' packages/dbus/dbus.ewpi
 #sed -i -e 's/installed: yes/installed: no/g' packages/libtiff/libtiff.ewpi
-#sed -i -e 's/installed: yes/installed: no/g' packages/*/*.ewpi
-#./ewpi /root/EFL/ewpi_64 x86_64-w64-mingw32
+sed -i -e 's/installed: yes/installed: no/g' packages/*/*.ewpi
+./ewpi /root/EFL/ewpi_64 x86_64-w64-mingw32
 cd /src
 
 # epp is looked for in a hardcoded /usr/local/lib, need to fix in efl
