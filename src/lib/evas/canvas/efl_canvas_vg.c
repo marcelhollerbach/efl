@@ -408,13 +408,11 @@ EOLIAN static Eina_Bool
 _efl_canvas_vg_efl_file_save(const Eo *obj, Efl_Canvas_Vg_Data *pd, const char *file, const char *key, const char *flags)
 {
    if (pd->vg_entry)
-     evas_cache_vg_entry_file_save(pd->vg_entry, file, key, flags);
-   else
-     {
-        Evas_Coord w, h;
-        evas_object_geometry_get(obj, NULL, NULL, &w, &h);
-        evas_cache_vg_file_save(pd->root, w, h, file, key, flags);
-     }
+     return evas_cache_vg_entry_file_save(pd->vg_entry, file, key, flags);
+
+   Evas_Coord w, h;
+   evas_object_geometry_get(obj, NULL, NULL, &w, &h);
+   return evas_cache_vg_file_save(pd->root, w, h, file, key, flags);
 }
 
 static void
