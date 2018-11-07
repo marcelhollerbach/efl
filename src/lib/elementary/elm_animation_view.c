@@ -180,7 +180,11 @@ EOLIAN static void
 _elm_animation_view_efl_canvas_group_group_del(Eo *obj, Elm_Animation_View_Data *pd EINA_UNUSED)
 {
    if (pd->file) eina_stringshare_del(pd->file);
-   if (pd->transit) elm_transit_del(pd->transit);
+   if (pd->transit)
+     {
+        pd->transit = NULL;   //Skip perform transit_del_cb()
+        elm_transit_del(pd->transit);
+     }
    pd->state = ELM_ANIMATION_VIEW_STATE_NOT_READY;
 
    efl_canvas_group_del(efl_super(obj, MY_CLASS));
