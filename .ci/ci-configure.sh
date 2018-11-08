@@ -36,12 +36,8 @@ if [ "$DISTRO" != "" ] ; then
   # Normal build test of all targets
   OPTS="$DEFAULT_LINUX_COPTS"
 
-  if [ "$1" = "wayland" ]; then
-    OPTS="$OPTS $WAYLAND_LINUX_COPTS"
-  fi
-
   if [ "$1" = "misc" ]; then
-    OPTS="$OPTS $MISC_LINUX_COPTS"
+    OPTS="$OPTS $MISC_LINUX_COPTS $WAYLAND_LINUX_COPTS"
   fi
 
   if [ "$1" = "misc-disabled" ]; then
