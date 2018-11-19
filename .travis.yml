@@ -21,9 +21,6 @@ env:
 
 jobs:
   include:
-    - os: osx
-      - env:
-        - BUILDSYSTEM=ninja
     - env:
       - os: linux
       - DISTRO=Fedora28
