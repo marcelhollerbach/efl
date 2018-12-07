@@ -4,7 +4,7 @@ jobs:
     working_directory: ~/efl/
     docker:
       # see the dockerfile
-            - image: stefanschmidt1/ci-support-files:Fedora28
+            - image: stefanschmidt1/ci-support-files:Archlinux
     steps:
       - checkout
       - run:
