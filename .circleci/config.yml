@@ -14,7 +14,6 @@ jobs:
             cd build
             meson ..
             ninja all
-            ninja install
       - run:
           name: tests
           command: |
