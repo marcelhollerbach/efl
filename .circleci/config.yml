@@ -1,0 +1,22 @@
+version: 2
+jobs:
+  build:
+    working_directory: ~/efl/
+    docker:
+      # see the dockerfile
+            - image: docker pull stefanschmidt1/ci-support-files:Fedora28
+    steps:
+      - checkout
+      - run:
+          name: build & install
+          command: |
+            mkdir build
+            cd build
+            meson ..
+            ninja all
+            ninja install
+      - run:
+          name: tests
+          command: |
+            cd build
+            ninja test
