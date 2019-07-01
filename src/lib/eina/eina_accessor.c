@@ -189,3 +189,64 @@ eina_accessor_unlock(Eina_Accessor *accessor)
       return accessor->unlock(accessor);
    return EINA_TRUE;
 }
+
+typedef struct _Eina_Accessor_CArray_Length Eina_Accessor_CArray_Length;
+
+struct _Eina_Accessor_CArray_Length
+{
+   Eina_Accessor accessor;
+
+   void** array;
+   void** current;
+
+   void** end;
+   unsigned int step;
+};
+
+static Eina_Bool
+eina_carray_length_accessor_get_at(Eina_Accessor_CArray_Length *it, unsigned int idx, void **data)
+{
+   if (it->array + idx*it->step >= it->end)
+     return EINA_FALSE;
+
+   memcpy(data, (void*) it->array + idx*it->step, it->step);
+   it->current += it->step;
+
+   return EINA_TRUE;
+}
+
+static void**
+eina_carray_length_accessor_get_container(Eina_Accessor_CArray_Length *it)
+{
+   return it->array;
+}
+
+static void
+eina_carray_length_accessor_free(Eina_Accessor_CArray_Length *it)
+{
+   free(it);
+}
+
+EAPI Eina_Accessor *
+eina_carray_length_accessor_new(void** array, unsigned int step, unsigned int length)
+{
+   Eina_Accessor_CArray_Length *it;
+
+   it = calloc(1, sizeof (Eina_Accessor_CArray_Length));
+   if (!it) return NULL;
+
+   EINA_MAGIC_SET(&it->accessor, EINA_MAGIC_ITERATOR);
+
+   it->array = array;
+   it->current = it->array;
+   it->end = it->current + length * step;
+   it->step = step;
+
+   it->accessor.version = EINA_ITERATOR_VERSION;
+   it->accessor.get_at = FUNC_ACCESSOR_GET_AT(eina_carray_length_accessor_get_at);
+   it->accessor.get_container = FUNC_ACCESSOR_GET_CONTAINER(
+      eina_carray_length_accessor_get_container);
+   it->accessor.free = FUNC_ACCESSOR_FREE(eina_carray_length_accessor_free);
+
+   return &it->accessor;
+}

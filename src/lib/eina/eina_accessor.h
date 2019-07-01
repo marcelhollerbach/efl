@@ -347,6 +347,7 @@ EAPI Eina_Bool eina_accessor_unlock(Eina_Accessor *accessor) EINA_ARG_NONNULL(1)
   for ((counter) = 0;                                                   \
        eina_accessor_data_get((accessor), (counter), (void **)(void *)&(data)); \
        (counter)++)
+EAPI Eina_Accessor* eina_carray_length_accessor_new(void** array, unsigned int step, unsigned int length);
 
 /**
  * @}
